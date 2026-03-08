@@ -1,0 +1,538 @@
+@if (isLoading) {
+<div class="min-h-screen py-8">
+  <div class="container max-w-7xl mx-auto px-4">
+    <!-- Header Skeleton -->
+    <div class="mb-8">
+      <div class="h-10 w-64 mb-4 bg-slate-800 rounded animate-pulse"></div>
+      <div class="h-6 w-full max-w-2xl bg-slate-800 rounded animate-pulse"></div>
+    </div>
+
+    <!-- Info Banner Skeleton -->
+    <div class="mb-8 bg-slate-900 bg-opacity-50 border border-slate-700 rounded-lg">
+      <div class="h-20 w-full bg-slate-800 rounded animate-pulse"></div>
+    </div>
+
+    <!-- Grid Skeleton -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      @for (i of [1, 2, 3]; track i) {
+      <div class="bg-slate-900 bg-opacity-50 border border-slate-700 rounded-lg">
+        <div class="h-32 w-full bg-slate-800 rounded-t-lg animate-pulse"></div>
+        <div class="p-4">
+          <div class="h-64 w-full bg-slate-800 rounded animate-pulse mt-4"></div>
+          <div class="h-12 w-full bg-slate-800 rounded animate-pulse mt-4"></div>
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+</div>
+} @else {
+<div class="mt-4 min-h-screen py-8" [@fadeInUp]>
+  <div class="container max-w-7xl mx-auto px-4">
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex items-center gap-3 mb-4">
+        <!-- Replaced QrCode Icon with Inline SVG due to lucide-angular injection error -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="h-8 w-8 text-indigo-500">
+          <rect width="5" height="5" x="3" y="3" />
+          <rect width="5" height="5" x="16" y="3" />
+          <rect width="5" height="5" x="3" y="16" />
+          <path d="M21 16h-3a2 2 0 0 0-2 2v3" />
+          <path d="M21 21v.01" />
+          <path d="M12 7v3a2 2 0 0 1-2 2H7" />
+          <path d="M3 12h.01" />
+          <path d="M12 3h.01" />
+          <path d="M12 16v.01" />
+          <path d="M16 12h1" />
+          <path d="M21 12v.01" />
+          <path d="M12 21v-1" />
+        </svg>
+        <h1 class="text-3xl md:text-4xl font-bold text-white">
+          QR Code Payments
+        </h1>
+      </div>
+      <p class="text-gray-400">
+        Scan the QR codes below to make payments using your preferred
+        payment method
+      </p>
+    </div>
+
+    <!-- Info Banner -->
+    <!-- <div class="mb-8 bg-secondary border border-secondary border-opacity-50 rounded-lg shadow-lg">
+      <div class="p-6 pt-6">
+        <p class="text-gray-300 flex items-start gap-2">
+          <span class="text-indigo-400 font-bold mt-1">ℹ️</span>
+          <span>
+            Scan any of the QR codes below using your phone camera or a QR
+            code scanner app. Each payment method offers instant and secure
+            transactions. Choose the option that works best for you.
+          </span>
+        </p>
+      </div>
+    </div> -->
+
+    <!-- Payment Method Dropdown & QR Display -->
+    <div class="max-w-md mx-auto bg-card border border-border rounded-xl shadow-lg overflow-hidden">
+      <!-- Dropdown Section -->
+      <div class="p-6 border-b border-border bg-muted/30">
+        <label class="block text-sm font-medium text-muted-foreground mb-2">Method</label>
+        <div class="relative">
+          <select (change)="onMethodChange($event)"
+            class="w-full appearance-none bg-background border border-input hover:border-primary/50 text-foreground rounded-lg px-4 py-3 pr-10 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all cursor-pointer">
+            @for (method of paymentMethods; track method.name) {
+            <option [value]="method.name" [selected]="method.name === selectedMethod">{{ method.name }} Qr</option>
+            }
+          </select>
+          <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-muted-foreground">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Instructions & Bonus -->
+      <div class="p-6 space-y-6">
+        <div class="space-y-2">
+          <p class="font-medium text-foreground sm:text-sm lg:text-[19px] flex items-center gap-2">
+            <span class="text-green-500 text-lg font-bold">✅</span>
+            Easy Payment — 0% Fee + 5% Bonus 🎁
+          </p>
+          <p class="lg:text-[16px] text-foreground/90 sm:text-xs">
+            Deposit <span class="font-bold">NPR 1,000 or more</span> and get <span class="font-bold">extra 5% bonus
+              instantly!</span>
+          </p>
+        </div>
+
+        <!-- QR Code -->
+        <div class="flex justify-center">
+          <div class="bg-white p-2 rounded-xl border-2 border-dashed border-border/50 shadow-sm">
+            <img [src]="currentPaymentMethod.qrImage" [alt]="currentPaymentMethod.name + ' QR'"
+              class="w-80 h-80 object-contain">
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="space-y-4 text-sm bg-muted/30 p-4 rounded-lg border border-border/50">
+          <p class="text-muted-foreground">Note: Deposit amounts are <span
+              class="font-medium text-foreground">non-refundable</span>.</p>
+
+          <div class="flex gap-2 items-start">
+            <span class="text-green-500 shrink-0 mt-0.5">✅</span>
+            <p class="text-muted-foreground">After making the payment, send a screenshot to us on <a
+                href="https://wa.me/9779742923741" target="_blank"
+                class="text-green-500 hover:underline font-medium">WhatsApp</a>.</p>
+          </div>
+
+          <div class="flex gap-2 items-start">
+            <span class="text-amber-500 shrink-0 mt-0.5">✍️</span>
+            <p class="text-muted-foreground">Please write your <span class="font-medium text-foreground">username</span>
+              in the remarks section — this helps us verify your payment quickly.</p>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="grid grid-cols-2 gap-3 pt-2">
+          <a href="https://wa.me/9779742923741" target="_blank"
+            class="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#25D366] hover:bg-[#25D366]/90 text-white rounded-lg transition-colors text-sm font-medium">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"
+              stroke="none">
+              <path
+                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+            </svg>
+            WhatsApp
+          </a>
+          <button (click)="handleDownload(currentPaymentMethod.name)"
+            class="flex items-center justify-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg transition-colors text-sm font-medium">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" x2="12" y1="15" y2="3" />
+            </svg>
+            Download QR
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="bg-primary/20 border border-primary/20 rounded-lg shadow-lg">
+      <!-- FAQ Header -->
+      <div class="p-6 border-b border-primary/20">
+        <h3 class="text-xl font-semibold text-white">
+          Frequently Asked Questions
+        </h3>
+      </div>
+
+      <!-- FAQ Content -->
+      <div class="p-6 space-y-6">
+        <div>
+          <h4 class="font-semibold text-white mb-2">
+            Is my payment secure?
+          </h4>
+          <p class="text-gray-400">
+            Yes, all payments are processed through secure payment gateways
+            with encryption and fraud protection.
+          </p>
+        </div>
+        <div>
+          <h4 class="font-semibold text-white mb-2">
+            How long does payment processing take?
+          </h4>
+          <p class="text-gray-400">
+            Most payments are processed instantly. You will receive a
+            confirmation immediately after completion.
+          </p>
+        </div>
+        <div>
+          <h4 class="font-semibold text-white mb-2">
+            Can I use multiple payment methods?
+          </h4>
+          <p class="text-gray-400">
+            Yes, you can switch between different payment methods for
+            different transactions based on your preference.
+          </p>
+        </div>
+        <div>
+          <h4 class="font-semibold text-white mb-2">
+            What if the QR code does not work?
+          </h4>
+          <p class="text-gray-400">
+            Make sure your device has a camera and proper lighting. If
+            issues persist, you can download and print the QR code for
+            better readability.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+}
+
+
+<!-- <div class="space-y-8" [@fadeInUp]> -->
+<!-- <div>
+    <h1 class="font-display text-3xl font-bold">Wallet</h1>
+    <p class="text-muted-foreground mt-1">Deposit funds using cryptocurrency</p>
+  </div> -->
+<!-- <div class="grid lg:grid-cols-3 gap-8">
+    <div
+      class="rounded-lg border bg-card shadow-sm lg:col-span-1 bg-gradient-to-br from-primary to-accent text-primary-foreground">
+      <div class="p-6">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-12 h-12 rounded-full bg-primary-foreground/20 flex items-center justify-center"><svg
+              xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-wallet w-6 h-6">
+              <path
+                d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1">
+              </path>
+              <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"></path>
+            </svg></div>
+          <div>
+            <p class="text-sm opacity-80">Available Balance</p>
+            <p class="font-display text-3xl font-bold">${{authService.currentUser()?.balance}}</p>
+          </div>
+        </div><button
+          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 px-4 py-2 w-full mt-2">Refresh
+          Balance</button>
+      </div>
+    </div>
+    <div class="rounded-lg border text-card-foreground shadow-sm lg:col-span-2 bg-card border-border">
+      <div class="p-8">
+        <div class="space-y-6" style="opacity: 1; transform: none;">
+          <div class="flex items-center gap-3">
+            <div
+              class="w-12 h-12 rounded-2xl bg-gradient-to-br from-orange-500/20 to-yellow-500/20 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-bitcoin w-6 h-6 text-orange-500">
+                <path
+                  d="M11.767 19.089c4.924.868 6.14-6.025 1.216-6.894m-1.216 6.894L5.86 18.047m5.908 1.042-.347 1.97m1.563-8.864c4.924.869 6.14-6.025 1.215-6.893m-1.215 6.893-3.94-.694m5.155-6.2L8.29 4.26m5.908 1.042.348-1.97M7.48 20.364l3.126-17.727">
+                </path>
+              </svg>
+            </div>
+            <div>
+              <h2 class="font-display text-xl font-bold">Add Balance</h2>
+              <p class="text-sm text-muted-foreground">Pay with Crypto</p>
+            </div>
+          </div>
+          <div class="space-y-2"><label class="text-sm font-medium text-muted-foreground">Amount ({{currencyService.currentCurrencyCode()}})</label>
+            <div class="relative"><span
+                class="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-semibold">{{currencyService.currentCurrency().symbol}}</span><input
+                type="number"
+                class="flex w-full rounded-md border px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm pl-8 h-14 text-lg bg-muted/50 border-border"
+                placeholder="Enter amount (min 10)" min="10" value=""></div>
+          </div>
+          <div class="space-y-2"><label class="text-sm font-medium text-muted-foreground">Select
+              Token</label>
+            <div class="relative">
+              <button type="button" (click)="toggleDropdown()"
+                class="flex w-full items-center justify-between rounded-md border px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 h-14 text-lg bg-muted/50 border-border">
+                <span>{{selectedToken}}</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="lucide lucide-chevron-down h-4 w-4 opacity-50 transition-transform"
+                  [class.rotate-180]="isDropdownOpen">
+                  <path d="m6 9 6 6 6-6"></path>
+                </svg>
+              </button>
+
+
+              @if (isDropdownOpen) {
+              <div @dropdownAnimation
+                class="absolute z-50 w-full mt-2 bg-card border border-border rounded-lg shadow-lg max-h-64 overflow-y-auto">
+                <div class="py-1">
+                  @for (token of tokens; track token) {
+                  <button (click)="selectToken(token)"
+                    class="w-full text-left px-4 py-3 text-sm hover:bg-secondary/50 transition-colors flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="text-primary">
+                        <path
+                          d="M11.767 19.089c4.924.868 6.14-6.025 1.216-6.894m-1.216 6.894L5.86 18.047m5.908 1.042-.347 1.97m1.563-8.864c4.924.869 6.14-6.025 1.215-6.893m-1.215 6.893-3.94-.694m5.155-6.2L8.29 4.26m5.908 1.042.348-1.97M7.48 20.364l3.126-17.727">
+                        </path>
+                      </svg>
+                    </div>
+                    <div>
+                      <p class="font-medium">{{token.name}}</p>
+                      <p class="text-xs text-muted-foreground">{{token.symbol}}</p>
+                    </div>
+                  </button>
+                  }
+                </div>
+              </div>
+              }
+            </div>
+          </div>
+          <div class="grid grid-cols-3 gap-4 py-2">
+            <div class="flex items-center gap-2 text-sm text-muted-foreground"><svg xmlns="http://www.w3.org/2000/svg"
+                width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield w-4 h-4 text-primary">
+                <path
+                  d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z">
+                </path>
+              </svg><span>Secure</span></div>
+            <div class="flex items-center gap-2 text-sm text-muted-foreground"><svg xmlns="http://www.w3.org/2000/svg"
+                width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-zap w-4 h-4 text-primary">
+                <path
+                  d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z">
+                </path>
+              </svg><span>Instant</span></div>
+            <div class="flex items-center gap-2 text-sm text-muted-foreground"><svg xmlns="http://www.w3.org/2000/svg"
+                width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-circle-check-big w-4 h-4 text-primary">
+                <path d="M21.801 10A10 10 0 1 1 17 3.335"></path>
+                <path d="m9 11 3 3L22 4"></path>
+              </svg><span>8 Tokens</span></div>
+          </div>
+          <div class="flex gap-3"><button
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md px-8 flex-1 h-14">Cancel</button><button
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-8 flex-1 h-14 text-lg font-semibold"
+              disabled="">Add Balance</button></div>
+        </div>
+      </div>
+    </div>
+  </div> -->
+<!-- <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
+    <div class="space-y-1.5 p-6 flex flex-row items-center justify-between">
+      <h3 class="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2"><svg
+          xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="lucide lucide-history w-5 h-5">
+          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+          <path d="M3 3v5h5"></path>
+          <path d="M12 7v5l4 2"></path>
+        </svg>Deposit History</h3><button
+        class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 hover:bg-accent hover:text-accent-foreground h-9 rounded-md px-3"><svg
+          xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="lucide lucide-refresh-cw w-4 h-4">
+          <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+          <path d="M21 3v5h-5"></path>
+          <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+          <path d="M8 16H3v5"></path>
+        </svg></button>
+    </div>
+    <div class="p-6 pt-0">
+      <div class="space-y-3">
+        <div class="flex items-center justify-between p-4 rounded-lg bg-muted/50 hover:bg-muted/80 transition-colors"
+          style="opacity: 1; transform: none;">
+          <div class="flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center"><svg
+                xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-bitcoin w-5 h-5 text-primary">
+                <path
+                  d="M11.767 19.089c4.924.868 6.14-6.025 1.216-6.894m-1.216 6.894L5.86 18.047m5.908 1.042-.347 1.97m1.563-8.864c4.924.869 6.14-6.025 1.215-6.893m-1.215 6.893-3.94-.694m5.155-6.2L8.29 4.26m5.908 1.042.348-1.97M7.48 20.364l3.126-17.727">
+                </path>
+              </svg></div>
+            <div>
+              <p class="font-semibold">$25.00 <span class="text-muted-foreground font-normal">USD</span>
+              </p>
+              <p class="text-sm text-muted-foreground">Jan 16, 2026 · 11:04 PM</p>
+            </div>
+          </div>
+          <div
+            class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 hover:bg-primary/80 bg-red-500/10 text-red-500 border-red-500/20">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-circle-x w-3 h-3 mr-1">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="m15 9-6 6"></path>
+              <path d="m9 9 6 6"></path>
+            </svg>Failed
+          </div>
+        </div>
+        <div class="flex items-center justify-between p-4 rounded-lg bg-muted/50 hover:bg-muted/80 transition-colors"
+          style="opacity: 1; transform: none;">
+          <div class="flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center"><svg
+                xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-bitcoin w-5 h-5 text-primary">
+                <path
+                  d="M11.767 19.089c4.924.868 6.14-6.025 1.216-6.894m-1.216 6.894L5.86 18.047m5.908 1.042-.347 1.97m1.563-8.864c4.924.869 6.14-6.025 1.215-6.893m-1.215 6.893-3.94-.694m5.155-6.2L8.29 4.26m5.908 1.042.348-1.97M7.48 20.364l3.126-17.727">
+                </path>
+              </svg></div>
+            <div>
+              <p class="font-semibold">$10.00 <span class="text-muted-foreground font-normal">USD</span>
+              </p>
+              <p class="text-sm text-muted-foreground">Jan 16, 2026 · 11:04 PM</p>
+            </div>
+          </div>
+          <div
+            class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 hover:bg-primary/80 bg-red-500/10 text-red-500 border-red-500/20">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-circle-x w-3 h-3 mr-1">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="m15 9-6 6"></path>
+              <path d="m9 9 6 6"></path>
+            </svg>Failed
+          </div>
+        </div>
+        <div class="flex items-center justify-between p-4 rounded-lg bg-muted/50 hover:bg-muted/80 transition-colors"
+          style="opacity: 1; transform: none;">
+          <div class="flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center"><svg
+                xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-bitcoin w-5 h-5 text-primary">
+                <path
+                  d="M11.767 19.089c4.924.868 6.14-6.025 1.216-6.894m-1.216 6.894L5.86 18.047m5.908 1.042-.347 1.97m1.563-8.864c4.924.869 6.14-6.025 1.215-6.893m-1.215 6.893-3.94-.694m5.155-6.2L8.29 4.26m5.908 1.042.348-1.97M7.48 20.364l3.126-17.727">
+                </path>
+              </svg></div>
+            <div>
+              <p class="font-semibold">$10.00 <span class="text-muted-foreground font-normal">USD</span>
+              </p>
+              <p class="text-sm text-muted-foreground">Jan 16, 2026 · 11:04 PM</p>
+            </div>
+          </div>
+          <div
+            class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 hover:bg-primary/80 bg-red-500/10 text-red-500 border-red-500/20">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-circle-x w-3 h-3 mr-1">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="m15 9-6 6"></path>
+              <path d="m9 9 6 6"></path>
+            </svg>Failed
+          </div>
+        </div>
+        <div class="flex items-center justify-between p-4 rounded-lg bg-muted/50 hover:bg-muted/80 transition-colors"
+          style="opacity: 1; transform: none;">
+          <div class="flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center"><svg
+                xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-bitcoin w-5 h-5 text-primary">
+                <path
+                  d="M11.767 19.089c4.924.868 6.14-6.025 1.216-6.894m-1.216 6.894L5.86 18.047m5.908 1.042-.347 1.97m1.563-8.864c4.924.869 6.14-6.025 1.215-6.893m-1.215 6.893-3.94-.694m5.155-6.2L8.29 4.26m5.908 1.042.348-1.97M7.48 20.364l3.126-17.727">
+                </path>
+              </svg></div>
+            <div>
+              <p class="font-semibold">$10.00 <span class="text-muted-foreground font-normal">USD</span>
+              </p>
+              <p class="text-sm text-muted-foreground">Jan 16, 2026 · 11:04 PM</p>
+            </div>
+          </div>
+          <div
+            class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 hover:bg-primary/80 bg-red-500/10 text-red-500 border-red-500/20">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-circle-x w-3 h-3 mr-1">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="m15 9-6 6"></path>
+              <path d="m9 9 6 6"></path>
+            </svg>Failed
+          </div>
+        </div>
+        <div class="flex items-center justify-between p-4 rounded-lg bg-muted/50 hover:bg-muted/80 transition-colors"
+          style="opacity: 1; transform: none;">
+          <div class="flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center"><svg
+                xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-bitcoin w-5 h-5 text-primary">
+                <path
+                  d="M11.767 19.089c4.924.868 6.14-6.025 1.216-6.894m-1.216 6.894L5.86 18.047m5.908 1.042-.347 1.97m1.563-8.864c4.924.869 6.14-6.025 1.215-6.893m-1.215 6.893-3.94-.694m5.155-6.2L8.29 4.26m5.908 1.042.348-1.97M7.48 20.364l3.126-17.727">
+                </path>
+              </svg></div>
+            <div>
+              <p class="font-semibold">$119.00 <span class="text-muted-foreground font-normal">USD</span>
+              </p>
+              <p class="text-sm text-muted-foreground">Jan 16, 2026 · 11:03 PM</p>
+            </div>
+          </div>
+          <div
+            class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 hover:bg-primary/80 bg-red-500/10 text-red-500 border-red-500/20">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-circle-x w-3 h-3 mr-1">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="m15 9-6 6"></path>
+              <path d="m9 9 6 6"></path>
+            </svg>Failed
+          </div>
+        </div>
+        <div class="flex items-center justify-between p-4 rounded-lg bg-muted/50 hover:bg-muted/80 transition-colors"
+          style="opacity: 1; transform: none;">
+          <div class="flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center"><svg
+                xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-bitcoin w-5 h-5 text-primary">
+                <path
+                  d="M11.767 19.089c4.924.868 6.14-6.025 1.216-6.894m-1.216 6.894L5.86 18.047m5.908 1.042-.347 1.97m1.563-8.864c4.924.869 6.14-6.025 1.215-6.893m-1.215 6.893-3.94-.694m5.155-6.2L8.29 4.26m5.908 1.042.348-1.97M7.48 20.364l3.126-17.727">
+                </path>
+              </svg></div>
+            <div>
+              <p class="font-semibold">$10.00 <span class="text-muted-foreground font-normal">USD</span>
+              </p>
+              <p class="text-sm text-muted-foreground">Jan 16, 2026 · 11:03 PM</p>
+            </div>
+          </div>
+          <div
+            class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 hover:bg-primary/80 bg-red-500/10 text-red-500 border-red-500/20">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-circle-x w-3 h-3 mr-1">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="m15 9-6 6"></path>
+              <path d="m9 9 6 6"></path>
+            </svg>Failed
+          </div>
+        </div>
+      </div>
+    </div>
+  </div> -->
+<!-- </div> -->

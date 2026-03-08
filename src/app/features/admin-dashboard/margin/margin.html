@@ -1,0 +1,259 @@
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold tracking-tight">Margin Configuration</h1>
+      <p class="text-muted-foreground mt-2">Manage global profit margins and view revenue tracking.</p>
+    </div>
+  </div>
+
+  <div class="grid gap-6 md:grid-cols-2">
+    <!-- Margin Update Form -->
+    <div class="rounded-xl border border-border bg-card shadow p-6">
+      <h3 class="text-lg font-semibold mb-4 text-foreground">Update Global Margin</h3>
+      <div class="space-y-4">
+        <div>
+          <label class="text-sm font-medium text-foreground">Current Margin</label>
+          <p class="text-2xl font-bold text-primary">{{ currentMargin() }} <span
+              class="text-sm text-muted-foreground ml-2">({{ profitPercentage() }}% Profit)</span></p>
+        </div>
+
+        <div class="space-y-2">
+          <label class="text-sm font-medium text-foreground" for="newMargin">New Margin (e.g. 1.8 for 80%
+            Profit)</label>
+          <input type="number" id="newMargin"
+            class="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            [(ngModel)]="newMargin" min="1" max="10" step="0.1" />
+        </div>
+
+        <button (click)="updateMargin()" [disabled]="isUpdating()"
+          class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 w-full">
+          @if(isUpdating()) {
+          Updating...
+          } @else {
+          Save Configuration
+          }
+        </button>
+      </div>
+    </div>
+
+    <!-- Margin Stats Overview -->
+    <div class="rounded-xl border border-border bg-card shadow p-6 flex flex-col">
+      <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+        <h3 class="text-lg font-semibold text-foreground">Margin Statistics</h3>
+
+        <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-muted-foreground">From:</span>
+            <input type="date" [(ngModel)]="marginStartDate" (ngModelChange)="onMarginDateChange()"
+              class="h-8 rounded-md border border-input bg-transparent px-2 text-xs">
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-muted-foreground">To:</span>
+            <input type="date" [(ngModel)]="marginEndDate" (ngModelChange)="onMarginDateChange()"
+              class="h-8 rounded-md border border-input bg-transparent px-2 text-xs">
+          </div>
+        </div>
+      </div>
+
+      @if (stats()) {
+      <div class="grid grid-cols-2 gap-4 flex-1">
+        <div class="bg-muted p-4 rounded-lg">
+          <p class="text-sm text-muted-foreground font-medium">Total Revenue</p>
+          <p class="text-2xl font-bold text-foreground">{{ currencyService.currentCurrency().symbol }}{{
+            currencyService.convert(stats().totalRevenue) | number:'1.2-2' }}</p>
+        </div>
+        <div class="bg-muted p-4 rounded-lg">
+          <p class="text-sm text-muted-foreground font-medium">Total Cost</p>
+          <p class="text-2xl font-bold text-destructive">{{ currencyService.currentCurrency().symbol }}{{
+            currencyService.convert(stats().totalCost) | number:'1.2-2' }}</p>
+        </div>
+        <div class="bg-muted p-4 rounded-lg col-span-2 flex items-center justify-between">
+          <div>
+            <p class="text-sm text-muted-foreground font-medium">Total Profit</p>
+            <div class="flex items-baseline gap-2">
+              <p class="text-3xl font-bold text-green-500">{{ currencyService.currentCurrency().symbol }}{{
+                currencyService.convert(stats().totalProfit) | number:'1.2-2' }}</p>
+              <span class="text-sm font-medium text-green-500/80">({{ stats().profitMargin }}% Realized)</span>
+            </div>
+          </div>
+          <div class="text-right">
+            <p class="text-sm text-muted-foreground font-medium">Orders</p>
+            <p class="text-xl font-bold">{{ stats().totalOrders | number }}</p>
+          </div>
+        </div>
+      </div>
+      } @else {
+      <div class="flex-1 flex items-center justify-center">
+        <p class="text-muted-foreground text-sm flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-spin">
+            <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
+          </svg>
+          Loading statistics...
+        </p>
+      </div>
+      }
+    </div>
+  </div>
+
+  <!-- Revenue Analytics -->
+  <div class="rounded-xl border border-border bg-card shadow p-6 mt-6">
+    <div
+      class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4 border-b border-border pb-4">
+      <h3 class="text-xl font-semibold text-foreground">Revenue Analytics</h3>
+
+      <div class="flex flex-wrap items-center gap-3">
+        <select [ngModel]="selectedPeriod()" (ngModelChange)="changePeriod($event)"
+          class="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+          <option value="day" class="bg-background text-foreground">Today</option>
+          <option value="week" class="bg-background text-foreground">Last 7 Days</option>
+          <option value="month" class="bg-background text-foreground">Last 30 Days</option>
+          <option value="custom" class="bg-background text-foreground">Custom Date Range</option>
+        </select>
+
+        @if (selectedPeriod() === 'custom') {
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-muted-foreground">From:</span>
+          <input type="date" [(ngModel)]="revStartDate" (ngModelChange)="onRevDateChange()"
+            class="h-9 rounded-md border border-input bg-transparent px-2 text-sm">
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-muted-foreground">To:</span>
+          <input type="date" [(ngModel)]="revEndDate" (ngModelChange)="onRevDateChange()"
+            class="h-9 rounded-md border border-input bg-transparent px-2 text-sm">
+        </div>
+        }
+      </div>
+    </div>
+
+    @if (revenueData()) {
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div class="border rounded-xl p-5 bg-card shadow-sm">
+        <p class="text-sm font-medium text-muted-foreground mb-1 uppercase tracking-wider">Total Orders</p>
+        <p class="text-3xl font-bold">{{ revenueData().total.count | number }}</p>
+      </div>
+      <div class="border rounded-xl p-5 bg-card shadow-sm border-blue-500/20">
+        <p class="text-sm font-medium text-muted-foreground mb-1 uppercase tracking-wider">Total Revenue</p>
+        <p class="text-3xl font-bold text-blue-500">{{ currencyService.currentCurrency().symbol }}{{
+          currencyService.convert(revenueData().total.revenue) | number:'1.2-2' }}</p>
+      </div>
+      <div class="border rounded-xl p-5 bg-card shadow-sm border-red-500/20">
+        <p class="text-sm font-medium text-muted-foreground mb-1 uppercase tracking-wider">Total Cost</p>
+        <p class="text-3xl font-bold text-red-500">{{ currencyService.currentCurrency().symbol }}{{
+          currencyService.convert(revenueData().total.cost) | number:'1.2-2' }}</p>
+      </div>
+      <div class="border rounded-xl p-5 bg-card shadow-sm border-green-500/20">
+        <p class="text-sm font-medium text-muted-foreground mb-1 uppercase tracking-wider">Net Profit</p>
+        <div class="flex items-baseline gap-2">
+          <p class="text-3xl font-bold text-green-500">{{ currencyService.currentCurrency().symbol }}{{
+            currencyService.convert(revenueData().total.profit) | number:'1.2-2' }}</p>
+          <span class="text-sm font-bold text-green-500/80 bg-green-500/10 px-2 py-0.5 rounded">{{
+            revenueData().total.profitMargin }}%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Status Breakdown -->
+      <div class="lg:col-span-1 border rounded-xl p-5 bg-card shadow-sm">
+        <h4 class="font-semibold text-base mb-4 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary">
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+          </svg>
+          Status Breakdown
+        </h4>
+        <div class="space-y-3">
+          @for (status of revenueData().byStatus; track status.status) {
+          <div class="flex items-center justify-between border-b border-border pb-3 last:border-0 last:pb-0">
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="font-medium capitalize text-sm">{{ status.status }}</span>
+                <span class="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full font-semibold">{{
+                  status._count }}</span>
+              </div>
+              <p class="text-xs text-muted-foreground">{{ currencyService.currentCurrency().symbol }}{{
+                currencyService.convert(status._sum.charge) | number:'1.2-2' }} Rev</p>
+            </div>
+            <div class="text-right">
+              <p class="font-semibold text-sm text-green-500">+{{ currencyService.currentCurrency().symbol }}{{
+                currencyService.convert(status._sum.profit) | number:'1.2-2' }}</p>
+            </div>
+          </div>
+          }
+          @if (revenueData().byStatus.length === 0) {
+          <p class="text-sm text-center text-muted-foreground py-4">No data available</p>
+          }
+        </div>
+      </div>
+
+      <!-- Provider Breakdown -->
+      <div class="lg:col-span-2 border rounded-xl p-5 bg-card shadow-sm">
+        <h4 class="font-semibold text-base mb-4 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary">
+            <path
+              d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+            </path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
+          Provider Performance
+        </h4>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          @for (provider of revenueData().providerBreakdown; track provider.provider) {
+          <div class="border rounded-lg p-4 bg-muted/20 hover:bg-muted/30 transition-colors">
+            <div class="flex items-center justify-between mb-3">
+              <h5 class="font-bold capitalize text-primary flex items-center gap-2">
+                <div class="h-6 w-6 rounded text-[10px] bg-primary/20 flex items-center justify-center">{{
+                  provider.provider.charAt(0).toUpperCase() }}</div>
+                {{ provider.provider }}
+              </h5>
+              <span class="text-xs font-semibold bg-background border px-2 py-0.5 rounded">{{ provider.totalOrders }}
+                Orders</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-y-3 gap-x-2 text-sm">
+              <div>
+                <p class="text-[10px] text-muted-foreground uppercase opacity-80">Revenue</p>
+                <p class="font-medium">{{ currencyService.currentCurrency().symbol }}{{
+                  currencyService.convert(provider.totalRevenue) | number:'1.2-2' }}</p>
+              </div>
+              <div>
+                <p class="text-[10px] text-muted-foreground uppercase opacity-80">Cost</p>
+                <p class="font-medium text-red-500/90">{{ currencyService.currentCurrency().symbol }}{{
+                  currencyService.convert(provider.totalCost) | number:'1.2-2' }}</p>
+              </div>
+              <div>
+                <p class="text-[10px] text-muted-foreground uppercase opacity-80">Actual Profit</p>
+                <p class="font-bold text-green-500">{{ currencyService.currentCurrency().symbol }}{{
+                  currencyService.convert(provider.totalProfit) | number:'1.2-2' }}</p>
+              </div>
+              <div>
+                <p class="text-[10px] text-muted-foreground uppercase opacity-80">Margin</p>
+                <p class="font-bold">{{ provider.profitMargin }}%</p>
+              </div>
+            </div>
+          </div>
+          }
+          @if (revenueData().providerBreakdown.length === 0) {
+          <div class="col-span-full text-center py-6 border border-dashed rounded-lg text-muted-foreground text-sm">
+            No provider data for this period
+          </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    } @else {
+    <div class="flex flex-col items-center justify-center py-12">
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        class="animate-spin text-primary mb-4">
+        <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
+      </svg>
+      <p class="text-muted-foreground text-sm font-medium">Loading analytics data...</p>
+    </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,287 @@
+<header
+  class="fixed top-0 left-0 lg:left-72 right-0 z-50 glass-header lg:bg-transparent lg:shadow-none lg:backdrop-blur-none h-16 lg:h-16 flex items-center justify-between px-4 lg:px-8 pointer-events-none">
+  <!-- Desktop Layout Container (Hidden on Mobile) -->
+  <div class="hidden lg:flex w-full items-center justify-between">
+    <!-- Desktop Left Side (Empty) -->
+    <div class="flex-grow"></div>
+
+    <!-- Scrolling Headlines Marquee (Desktop) -->
+    <div *ngIf="activeHeadlines().length > 0"
+      class="w-[400px] glass-header overflow-hidden py-1.5 px-4 shadow-sm items-center border border-primary/20 rounded-full pointer-events-auto shrink-0 flex">
+      <div
+        class="flex-shrink-0 text-primary font-semibold flex items-center gap-2 mr-3 border-r border-primary/30 pr-3">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="lucide lucide-megaphone animate-pulse">
+          <path d="m3 11 18-5v12L3 14v-3z" />
+          <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" />
+        </svg>
+        <span class="text-[10px] lg:text-xs uppercase tracking-wider font-bold">Updates</span>
+      </div>
+      <div class="flex-grow overflow-hidden relative"
+        style="mask-image: linear-gradient(to right, transparent, black 2%, black 98%, transparent);">
+        <div
+          class="whitespace-nowrap animate-marquee inline-flex items-center text-sm text-primary/90 font-semibold hover:[animation-play-state:paused] cursor-default pt-[3px]">
+          <span *ngFor="let headline of activeHeadlines(); let isLast=last">
+            {{ headline.text }}
+            <span *ngIf="!isLast" class="mx-6 text-primary/40 opacity-50">•</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Desktop Spacer -->
+    <div class="flex-grow"></div>
+
+    <!-- Desktop Right Side Controls -->
+    <div class="flex items-center gap-2 pointer-events-auto pt-4">
+      <!-- Language Dropdown -->
+      <div class="relative">
+        <button (click)="toggleLanguageDropdown()"
+          class="p-2 hover:bg-secondary/50 rounded-xl transition-colors flex items-center gap-1">
+          <span class="text-lg">{{languageService.getCurrentLanguage().flag}}</span>
+        </button>
+
+        @if (isLanguageDropdownOpen()) {
+        <div
+          class="absolute right-0 top-full mt-2 w-32 bg-card border border-border rounded-lg shadow-lg overflow-hidden py-1 z-50">
+          @for (lang of languageService.languages; track lang.code) {
+          <button (click)="setLanguage(lang.code)"
+            class="w-full text-left px-4 py-2 text-sm hover:bg-secondary/50 transition-colors flex items-center gap-2"
+            [class.bg-secondary]="lang.code === languageService.currentLanguageCode()">
+            <span>{{lang.flag}}</span>
+            <span>{{lang.name}}</span>
+          </button>
+          }
+        </div>
+        }
+      </div>
+
+      <!-- Currency Dropdown -->
+      <div class="relative">
+        <button (click)="toggleCurrencyDropdown()"
+          class="p-2 hover:bg-secondary/50 rounded-xl transition-colors text-sm font-medium">
+          {{currencyService.currentCurrencyCode()}}
+        </button>
+
+        @if (isCurrencyDropdownOpen()) {
+        <div
+          class="absolute right-0 top-full mt-2 w-32 bg-card border border-border rounded-lg shadow-lg overflow-hidden py-1 z-50">
+          @for (curr of currencyService.getAvailableCurrencies(); track curr.code) {
+          <button (click)="setCurrency(curr.code)"
+            class="w-full text-left px-4 py-2 text-sm hover:bg-secondary/50 transition-colors flex items-center gap-2"
+            [class.bg-secondary]="curr.code === currencyService.currentCurrencyCode()">
+            <span class="font-bold w-4 text-center">{{curr.symbol}}</span>
+            <span>{{curr.code}}</span>
+          </button>
+          }
+        </div>
+        }
+      </div>
+
+      <!-- Desktop Notifications -->
+      <div class="relative">
+        <button title="Notifications" (click)="toggleNotifications()"
+          class="relative p-2 hover:bg-secondary/50 rounded-xl transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="lucide lucide-bell w-5 h-5">
+            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+          </svg>
+          @if(notificationService.unreadCount() > 0) {
+          <span
+            class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full animate-pulse border border-background"></span>
+          }
+        </button>
+
+        @if(isNotificationsOpen()) {
+        <!-- Desktop Notifications Dropdown -->
+        <div
+          class="absolute right-0 top-full mt-2 w-96 shadow-2xl z-[100] animate-in fade-in slide-in-from-top-2 duration-200">
+          <app-notifications (close)="toggleNotifications()"></app-notifications>
+        </div>
+        <div class="fixed inset-0 z-[90] bg-transparent" (click)="toggleNotifications()"></div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Layout Container (Hidden on Desktop) -->
+  <div class="flex lg:hidden w-full items-center pointer-events-auto h-14 safe-area-top relative">
+    <!-- Logo Left -->
+    <a class="flex items-center" href="/dashboard">
+      <img src="/app-logo.png" alt="SmmStable" class="h-16 w-auto ml-1">
+    </a>
+
+    <!-- Controls Right -->
+    <div class="flex items-center gap-1 ml-auto">
+
+      <!-- Mobile Currency Dropdown -->
+      <div class="relative">
+        <button (click)="toggleCurrencyDropdown()"
+          class="p-2 hover:bg-secondary/50 rounded-xl transition-colors text-sm font-medium">
+          {{currencyService.currentCurrencyCode()}}
+        </button>
+
+        @if (isCurrencyDropdownOpen()) {
+        <div
+          class="absolute right-0 top-full mt-2 w-32 bg-card border border-border rounded-lg shadow-lg overflow-hidden py-1 z-50">
+          @for (curr of currencyService.getAvailableCurrencies(); track curr.code) {
+          <button (click)="setCurrency(curr.code)"
+            class="w-full text-left px-4 py-2 text-sm hover:bg-secondary/50 transition-colors flex items-center gap-2"
+            [class.bg-secondary]="curr.code === currencyService.currentCurrencyCode()">
+            <span class="font-bold w-4 text-center">{{curr.symbol}}</span>
+            <span>{{curr.code}}</span>
+          </button>
+          }
+        </div>
+        }
+      </div>
+
+      <!-- Mobile Notifications -->
+      <div class="relative">
+        <button class="relative p-2 hover:bg-secondary/50 rounded-xl transition-colors" (click)="toggleNotifications()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="lucide lucide-bell w-5 h-5">
+            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+          </svg>
+          @if(notificationService.unreadCount() > 0) {
+          <span
+            class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full animate-pulse border border-background"></span>
+          }
+        </button>
+
+        @if(isNotificationsOpen()) {
+        <!-- Mobile Notifications Dropdown -->
+        <div class="fixed inset-0 z-[100] bg-background/80 backdrop-blur-sm" (click)="toggleNotifications()">
+          <div
+            class="absolute top-16 mx-4 -left-[14px] right-0 shadow-2xl animate-in fade-in slide-in-from-top-5 duration-200"
+            (click)="$event.stopPropagation()">
+            <app-notifications (close)="toggleNotifications()"></app-notifications>
+          </div>
+        </div>
+        }
+      </div>
+
+      <!-- Mobile User Profile Dropdown -->
+      <div class="relative">
+        <button
+          class="inline-flex items-center justify-center whitespace-nowrap outline-none disabled:pointer-events-none disabled:opacity-50 h-10 w-10 p-1"
+          type="button" (click)="toggleProfileMenu()">
+          <div
+            class="w-8 h-8 rounded-full bg-primary/10 hover:bg-primary transition-colors flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-user w-4 h-4 text-primary">
+              <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </div>
+        </button>
+
+        @if(isProfileMenuOpen()) {
+        <div
+          class="absolute right-0 top-full mt-2 min-w-[12rem] overflow-hidden rounded-[8px] border border-border bg-card shadow-lg z-50 animate-in fade-in slide-in-from-top-2">
+          <!-- User info header -->
+          <div class="px-4 py-3">
+            <p class="text-base font-medium truncate">{{authService.currentUser()?.username || 'User'}}</p>
+            <p class="text-sm text-muted-foreground truncate">{{authService.currentUser()?.email || 'user@example.com'}}
+            </p>
+          </div>
+
+          <!-- Full width separator -->
+          <div role="separator" class="h-[1px] w-full bg-border/40"></div>
+
+          <!-- Settings Item -->
+          <a routerLink="/dashboard/settings" (click)="isProfileMenuOpen.set(false)"
+            class="relative flex cursor-pointer select-none items-center px-4 py-3 text-base outline-none transition-colors hover:bg-primary focus:bg-secondary/80 text-foreground">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-settings w-5 h-5 mr-3">
+              <path
+                d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z">
+              </path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>Settings
+          </a>
+
+          <!-- Marketplace Item -->
+          <a routerLink="/dashboard/market-place" (click)="isProfileMenuOpen.set(false)"
+            class="relative flex cursor-pointer select-none items-center px-4 py-3 text-base outline-none transition-colors hover:bg-primary focus:bg-secondary/80 text-foreground">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-store w-5 h-5 mr-3">
+              <path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"></path>
+              <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+              <path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"></path>
+              <path d="M2 7h20"></path>
+              <path
+                d="M22 7v3a2 2 0 0 1-2 2a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7">
+              </path>
+            </svg>Marketplace
+          </a>
+
+          <!-- Referrals Item -->
+          <a routerLink="/dashboard/referrals" (click)="isProfileMenuOpen.set(false)"
+            class="relative flex cursor-pointer select-none items-center px-4 py-3 text-base outline-none transition-colors hover:bg-primary focus:bg-secondary/80 text-foreground">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-users w-5 h-5 mr-3">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>Referrals
+          </a>
+
+          <!-- Loyalty Tier Item -->
+          <a routerLink="/dashboard/loyalty-tier" (click)="isProfileMenuOpen.set(false)"
+            class="relative flex cursor-pointer select-none items-center px-4 py-3 text-base outline-none transition-colors hover:bg-primary focus:bg-secondary/80 text-foreground">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-award w-5 h-5 mr-3">
+              <path
+                d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526">
+              </path>
+              <circle cx="12" cy="8" r="6"></circle>
+            </svg>Loyalty Tier
+          </a>
+
+          <!-- About Us Item -->
+          <a routerLink="/dashboard/about-us" (click)="isProfileMenuOpen.set(false)"
+            class="relative flex cursor-pointer select-none items-center px-4 py-3 text-base outline-none transition-colors hover:bg-primary focus:bg-secondary/80 text-foreground">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-info w-5 h-5 mr-3">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M12 16v-4"></path>
+              <path d="M12 8h.01"></path>
+            </svg>About Us
+          </a>
+
+          <!-- Full width separator -->
+          <div role="separator" class="h-[1px] w-full bg-border/40"></div>
+
+          <!-- Logout Item -->
+          <button (click)="logout()"
+            class="relative flex w-full cursor-pointer select-none items-center px-4 py-3 text-base outline-none transition-colors hover:bg-red-600 hover:text-white focus:bg-destructive/10 text-destructive focus:text-destructive">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-log-out w-5 h-5 mr-3">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" x2="9" y1="12" y2="12"></line>
+            </svg>Logout
+          </button>
+        </div>
+
+        <!-- Backdrop to close menu -->
+        <div class="fixed inset-0 z-40" (click)="isProfileMenuOpen.set(false)"></div>
+        }
+      </div>
+    </div>
+  </div>
+</header>

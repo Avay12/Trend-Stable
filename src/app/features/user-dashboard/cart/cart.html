@@ -1,0 +1,139 @@
+<div class="space-y-8" [@fadeInUp]>
+    <div class="animate-fade-in-up">
+        <h1 class="font-display text-3xl font-bold">Cart</h1>
+        <p class="text-muted-foreground mt-1">Review your items and place a mass order</p>
+    </div>
+    @if(cartItems.length === 0){
+    <div class="rounded-lg border text-card-foreground shadow-sm bg-card border-border">
+        <div class="p-6 py-16 text-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" class="lucide lucide-shopping-bag w-16 h-16 mx-auto text-muted-foreground mb-4">
+                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path>
+                <path d="M3 6h18"></path>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+            </svg>
+            <h2 class="font-display text-xl font-semibold mb-2">No items in cart</h2>
+            <p class="text-muted-foreground mb-6">Browse our services and add items to your cart</p><a
+                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+                href="/dashboard/services">Browse Services<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="lucide lucide-arrow-right w-4 h-4 ml-2">
+                    <path d="M5 12h14"></path>
+                    <path d="m12 5 7 7-7 7"></path>
+                </svg></a>
+        </div>
+    </div>
+    }
+
+    @if(cartItems.length > 0){
+    <div class="grid lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-4">
+            @for(item of cartItems; track item.serviceId){
+            <div class="animate-fade-in-up animate-delay-100">
+                <div class="rounded-lg border text-card-foreground shadow-sm bg-card border-border hover-lift">
+                    <div class="p-4">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div class="flex-1">
+                                <h3 class="font-semibold">{{item.serviceName}}</h3>
+                                <p class="text-sm text-muted-foreground capitalize">{{platform(item.serviceName)}} •
+                                    {{currencyService.currentCurrency().symbol}}{{currencyService.convert(item.rate) |
+                                    number:'1.2-2'}} Per 1000</p>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="flex items-center gap-2">
+                                    <button (click)="decreaseQuantity(item)" [disabled]="item.quantity <= item.min"
+                                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 w-8">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round"
+                                            class="lucide lucide-minus w-4 h-4">
+                                            <path d="M5 12h14"></path>
+                                        </svg>
+                                    </button>
+                                    <span class="w-20 text-center font-medium">{{item.quantity}}</span>
+                                    <button (click)="increaseQuantity(item)" [disabled]="item.quantity >= item.max"
+                                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 w-8">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round"
+                                            class="lucide lucide-plus w-4 h-4">
+                                            <path d="M5 12h14"></path>
+                                            <path d="M12 5v14"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="w-24 text-right font-semibold">
+                                    {{currencyService.currentCurrency().symbol}}{{currencyService.convert(getItemTotal(item))
+                                    | number:'1.2-2'}}</div>
+                                <button (click)="removeItem(item.serviceId)"
+                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 h-10 w-10 text-destructive hover:text-destructive hover:bg-destructive/10">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="lucide lucide-trash2 w-4 h-4">
+                                        <path d="M3 6h18"></path>
+                                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                                        <line x1="10" x2="10" y1="11" y2="17"></line>
+                                        <line x1="14" x2="14" y1="11" y2="17"></line>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            }
+
+            <button (click)="clearCart()"
+                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input bg-background hover:bg-accent h-10 px-4 py-2 text-destructive hover:text-destructive animate-fade-in-up animate-delay-400"><svg
+                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-trash2 w-4 h-4 mr-2">
+                    <path d="M3 6h18"></path>
+                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                    <line x1="10" x2="10" y1="11" y2="17"></line>
+                    <line x1="14" x2="14" y1="11" y2="17"></line>
+                </svg>Clear Cart</button>
+        </div>
+        <div class="lg:col-span-1">
+            <div
+                class="rounded-lg border text-card-foreground shadow-sm bg-card border-border sticky top-4 animate-slide-in-right animate-delay-200 hover-lift">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="text-2xl font-semibold leading-none tracking-tight">Order Summary</h3>
+                </div>
+                <div class="p-6 pt-0 space-y-4">
+                    <div class="flex justify-between text-sm"><span class="text-muted-foreground">Items
+                            ({{itemCount}})</span><span>{{currencyService.currentCurrency().symbol}}{{currencyService.convert(total)
+                            | number:'1.2-2'}}</span></div>
+                    <div class="border-t border-border pt-4">
+                        <div class="flex justify-between font-semibold text-lg"><span>Total</span><span
+                                class="text-primary">{{currencyService.currentCurrency().symbol}}{{currencyService.convert(total)
+                                | number:'1.2-2'}}</span></div>
+                    </div>
+                    <div class="bg-secondary/50 rounded-lg p-3">
+                        <div class="flex justify-between text-sm"><span class="text-muted-foreground">{{ 'WALLET' |
+                                translate }} {{ 'AVAILABLE_BALANCE' | translate }}</span><span
+                                class="text-destructive">{{currencyService.currentCurrency().symbol}}{{currencyService.convert(authService.currentUser()!.balance
+                                || 0) | number:'1.2-2'}}</span></div>
+                    </div>
+                    @if(total > authService.currentUser()!.balance){
+                    <p class="text-sm text-destructive">Insufficient balance. <a class="underline"
+                            routerLink="/dashboard/wallet">Deposit funds</a></p>
+                    }
+
+                    <button
+                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 bg-primary text-primary-foreground hover:bg-primary/90 h-11 rounded-md px-8 w-full"
+                        disabled="">Place Mass Order<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round"
+                            class="lucide lucide-arrow-right w-4 h-4 ml-2">
+                            <path d="M5 12h14"></path>
+                            <path d="m12 5 7 7-7 7"></path>
+                        </svg></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+</div>

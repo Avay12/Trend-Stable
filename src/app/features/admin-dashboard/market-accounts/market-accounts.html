@@ -1,0 +1,334 @@
+@if (isLoading()) {
+<div class="flex justify-center items-center py-20 min-h-[60vh]">
+  <div class="flex flex-col items-center gap-4">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      class="lucide lucide-loader-2 animate-spin text-primary">
+      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+    </svg>
+    <p class="text-sm text-muted-foreground animate-pulse">Loading market accounts...</p>
+  </div>
+</div>
+} @else {
+<div class="space-y-4 sm:space-y-6">
+
+  <!-- Header -->
+  <div class="flex flex-col gap-3 sm:gap-4 md:flex-row md:items-center md:justify-between">
+    <div>
+      <h1 class="text-xl sm:text-2xl md:text-3xl font-bold">Market Accounts</h1>
+      <p class="text-sm sm:text-base text-muted-foreground mt-0.5">Manage buying and selling requests</p>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex flex-wrap gap-2">
+      @if(this.activeTab() !== 'Users Selling') {
+      <button (click)="openAddModal()"
+        class="inline-flex items-center gap-2 px-3 sm:px-4 py-2 text-sm sm:text-base rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14"></path>
+          <path d="M12 5v14"></path>
+        </svg>
+        <span>Add Account</span>
+      </button>
+      }
+      <button (click)="exportToPDF()"
+        class="inline-flex items-center gap-2 px-3 sm:px-4 py-2 text-sm sm:text-base rounded-lg border border-input bg-background hover:bg-accent transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+        </svg>
+        <span class="hidden xs:inline sm:inline">PDF</span>
+      </button>
+      <button (click)="exportToExcel()"
+        class="inline-flex items-center gap-2 px-3 sm:px-4 py-2 text-sm sm:text-base rounded-lg border border-input bg-background hover:bg-accent transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+        </svg>
+        <span class="hidden xs:inline sm:inline">Excel</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="border-b border-border -mx-1 px-1 sm:mx-0 sm:px-0">
+    <div class="flex gap-2 sm:gap-4">
+      <button (click)="setActiveTab('Users Selling')"
+        class="px-3 sm:px-4 py-2 text-sm sm:text-base font-medium transition-colors border-b-2"
+        [ngClass]="activeTab() === 'Users Selling' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'">
+        Users Selling
+      </button>
+      <button (click)="setActiveTab('Admin Selling')"
+        class="px-3 sm:px-4 py-2 text-sm sm:text-base font-medium transition-colors border-b-2"
+        [ngClass]="activeTab() === 'Admin Selling' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'">
+        Admin Selling
+      </button>
+    </div>
+  </div>
+
+  <!-- Search -->
+  <div>
+    <input type="text" [(ngModel)]="searchTerm" (keyup.enter)="onSearch()" (input)="onSearch()"
+      placeholder="Search accounts..."
+      class="w-full sm:w-auto sm:min-w-[320px] md:w-96 px-3 sm:px-4 py-2 text-base rounded-lg border border-input bg-background">
+  </div>
+
+  <!-- Table -->
+  @if(this.activeTab()==="Users Selling"){
+  <div class="rounded-lg border border-border bg-card overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full min-w-[800px]">
+        <thead class="bg-muted/50 border-b border-border">
+          <tr>
+            <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-semibold">Platform</th>
+            <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-semibold">Account Name
+            </th>
+            <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-semibold">
+              Followers</th>
+            <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-semibold">Price</th>
+            <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-semibold hidden lg:table-cell">
+              Status</th>
+            <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-semibold hidden xl:table-cell">
+              Date</th>
+            <th class="px-2 sm:px-4 py-2 sm:py-3 text-right text-xs sm:text-sm font-semibold">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border">
+          @for (account of sellAccounts(); track account.id) {
+          <tr class="hover:bg-muted/30 transition-colors">
+            <td class="px-2 sm:px-4 py-2 sm:py-3">
+              <span
+                class="inline-flex px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md text-[10px] sm:text-xs font-semibold bg-primary/10 text-primary">
+                {{ account.platform }}
+              </span>
+            </td>
+            <td class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-xs sm:text-sm">{{ account.username }}
+            </td>
+            <td class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-xs sm:text-sm">
+              {{ account.followers > 0 ? account.followers.toLocaleString() : 'N/A' }}
+            </td>
+            <td class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-xs sm:text-sm">
+              {{ currencyService.currentCurrency().symbol }}{{ currencyService.convert(account.price) | number:'1.2-2'
+              }}</td>
+            <td class="px-2 sm:px-4 py-2 sm:py-3 hidden lg:table-cell">
+              <span
+                class="inline-flex px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-semibold bg-green-500/10 text-green-500">
+                Available
+              </span>
+            </td>
+            <td class="px-2 sm:px-4 py-2 sm:py-3 hidden xl:table-cell text-xs sm:text-sm text-muted-foreground">
+              N/A
+            </td>
+            <td class="px-2 sm:px-4 py-2 sm:py-3 text-right">
+              <button (click)="openEditModal(account)"
+                class="inline-flex items-center gap-1 px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path>
+                </svg>
+                <span class="hidden sm:inline">Edit</span>
+              </button>
+            </td>
+          </tr>
+          } @empty {
+          <tr>
+            <td colspan="7" class="px-4 py-8 text-center text-sm text-muted-foreground">
+              No {{ activeTab() }} accounts found
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+  </div>
+  }
+
+  @if(this.activeTab()==="Admin Selling"){
+  <div class="rounded-lg border border-border bg-card overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full min-w-[800px]">
+        <thead class="bg-muted/50 border-b border-border">
+          <tr>
+            <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-semibold">Platform</th>
+            <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-semibold">Account Name
+            </th>
+            <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-semibold">
+              Followers</th>
+            <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-semibold">Price</th>
+            <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-semibold hidden lg:table-cell">
+              Status</th>
+            <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-semibold hidden xl:table-cell">
+              Date</th>
+            <th class="px-2 sm:px-4 py-2 sm:py-3 text-right text-xs sm:text-sm font-semibold">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border">
+          @for (account of buyAccounts(); track account.id) {
+          <tr class="hover:bg-muted/30 transition-colors">
+            <td class="px-2 sm:px-4 py-2 sm:py-3">
+              <span
+                class="inline-flex px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md text-[10px] sm:text-xs font-semibold bg-primary/10 text-primary">
+                {{ account.platform }}
+              </span>
+            </td>
+            <td class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-xs sm:text-sm">{{ account.username }}
+            </td>
+            <td class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-xs sm:text-sm">
+              {{ account.followers > 0 ? account.followers.toLocaleString() : 'N/A' }}
+            </td>
+            <td class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-xs sm:text-sm">
+              {{ currencyService.currentCurrency().symbol }}{{ currencyService.convert(account.price) | number:'1.2-2'
+              }}</td>
+            <td class="px-2 sm:px-4 py-2 sm:py-3 hidden lg:table-cell">
+              <span
+                class="inline-flex px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-semibold bg-green-500/10 text-green-500">
+                Available
+              </span>
+            </td>
+            <td class="px-2 sm:px-4 py-2 sm:py-3 hidden xl:table-cell text-xs sm:text-sm text-muted-foreground">
+              N/A
+            </td>
+            <td class="px-2 sm:px-4 py-2 sm:py-3 text-right">
+              <button (click)="openEditModal(account)"
+                class="inline-flex items-center gap-1 px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path>
+                </svg>
+                <span class="hidden sm:inline">Edit</span>
+              </button>
+            </td>
+          </tr>
+          } @empty {
+          <tr>
+            <td colspan="7" class="px-4 py-8 text-center text-sm text-muted-foreground">
+              No {{ activeTab() }} accounts found
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+  </div>
+  }
+
+
+</div>
+}
+
+
+<!-- Add/Edit Modal -->
+@if (showAddModal() || showEditModal()) {
+<div data-state="open"
+  class="fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
+  style="pointer-events: auto;" data-aria-hidden="true" aria-hidden="true"></div>
+<div class="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/50" (click)="closeModals()">
+  <div class="bg-card rounded-lg shadow-xl max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto"
+    (click)="$event.stopPropagation()">
+    <!-- Modal Header -->
+    <div class="p-4 sm:p-6 border-b border-border flex items-center justify-between gap-3">
+      <h2 class="text-lg sm:text-xl md:text-2xl font-bold">{{ showAddModal() ? 'Add New Account' : 'Edit Account'
+        }}</h2>
+      <button (click)="closeModals()"
+        class="flex items-center justify-center w-8 h-8 rounded-md hover:bg-accent transition-colors flex-shrink-0"
+        aria-label="Close modal">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 6 6 18"></path>
+          <path d="m6 6 12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <form [formGroup]="accountForm" (ngSubmit)="saveAccount()">
+      <!-- Modal Body -->
+      <div class="p-4 sm:p-6 space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+          <div>
+            <label class="block text-sm font-medium mb-1.5 sm:mb-2">Platform *</label>
+            <select title="Select platform" formControlName="platform"
+              class="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-base rounded-lg border border-input bg-background">
+              <option value="TikTok">TikTok</option>
+              <option value="Instagram">Instagram</option>
+              <option value="Facebook">Facebook</option>
+              <option value="YouTube">YouTube</option>
+              <option value="Twitter">Twitter</option>
+            </select>
+            @if (accountForm.get('platform')?.invalid && accountForm.get('platform')?.touched) {
+            <p class="text-sm text-red-500 mt-1">Platform is required</p>
+            }
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1.5 sm:mb-2">Username *</label>
+            <input type="text" formControlName="username"
+              class="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-base rounded-lg border border-input bg-background"
+              placeholder="@username or description">
+            @if (accountForm.get('username')?.invalid && accountForm.get('username')?.touched) {
+            <p class="text-sm text-red-500 mt-1">Username is required</p>
+            }
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1.5 sm:mb-2">Followers *</label>
+            <input type="number" formControlName="followers"
+              class="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-base rounded-lg border border-input bg-background"
+              placeholder="0">
+            @if (accountForm.get('followers')?.invalid && accountForm.get('followers')?.touched) {
+            <p class="text-sm text-red-500 mt-1">
+              {{ accountForm.get('followers')?.errors?.['required'] ? 'Followers is required' : 'Followers must be 0 or
+              greater' }}
+            </p>
+            }
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1.5 sm:mb-2">Price ($) *</label>
+            <input type="number" step="0.01" formControlName="price"
+              class="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-base rounded-lg border border-input bg-background"
+              placeholder="0.00">
+            @if (accountForm.get('price')?.invalid && accountForm.get('price')?.touched) {
+            <p class="text-sm text-red-500 mt-1">
+              {{ accountForm.get('price')?.errors?.['required'] ? 'Price is required' : 'Price must be 0 or greater' }}
+            </p>
+            }
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1.5 sm:mb-2">Type *</label>
+            <select title="Select type" formControlName="type"
+              class="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-base rounded-lg border border-input bg-background">
+              <option value="Sell">Selling</option>
+              <option value="Buy">Buying</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1.5 sm:mb-2">Description *</label>
+          <textarea formControlName="description" rows="3"
+            class="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-base rounded-lg border border-input bg-background"
+            placeholder="Enter account details..."></textarea>
+          @if (accountForm.get('description')?.invalid && accountForm.get('description')?.touched) {
+          <p class="text-sm text-red-500 mt-1">Description is required</p>
+          }
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-4 sm:p-6 border-t border-border flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3">
+        <button type="button" (click)="closeModals()"
+          class="w-full sm:w-auto px-4 py-2.5 sm:py-2 rounded-lg border border-input hover:bg-accent transition-colors text-sm sm:text-base font-medium">
+          Cancel
+        </button>
+        <button type="submit" [disabled]="accountForm.invalid"
+          class="w-full sm:w-auto px-4 py-2.5 sm:py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-sm sm:text-base font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+          {{ showAddModal() ? 'Add Account' : 'Save Changes' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+}

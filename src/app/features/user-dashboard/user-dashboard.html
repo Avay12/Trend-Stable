@@ -1,0 +1,33 @@
+<div class="min-h-screen bg-background">
+  <app-dashboard-header></app-dashboard-header>
+  <main class="lg:ml-72 pt-16 lg:pt-0 min-h-screen lg:mb-0 mb-16">
+    <!-- Scrolling Headlines Marquee -->
+    <!-- <div *ngIf="activeHeadlines().length > 0"
+      class="sticky top-16 z-40 lg:hidden w-full glass-header overflow-hidden py-2 px-4 shadow-sm flex items-center">
+      <div
+        class="flex-shrink-0 text-primary font-semibold flex items-center gap-2 mr-4 border-r border-primary/30 pr-4">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="lucide lucide-megaphone animate-pulse">
+          <path d="m3 11 18-5v12L3 14v-3z" />
+          <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" />
+        </svg>
+        <span class="text-xs uppercase tracking-wider">Updates</span>
+      </div>
+      <div class="flex-grow overflow-hidden relative"
+        style="mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);">
+        <div
+          class="whitespace-nowrap animate-marquee inline-block text-sm text-primary/90 font-medium font-semibold hover:[animation-play-state:paused] cursor-default leading-loose">
+          <span *ngFor="let headline of activeHeadlines(); let isLast=last">
+            {{ headline.text }}
+            <span *ngIf="!isLast" class="mx-8 text-primary/50 opacity-50">•</span>
+          </span>
+        </div>
+      </div>
+    </div> -->
+    <div class="p-4 lg:p-8" style="opacity: 1; transform: none;">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+  <app-sidebar></app-sidebar>
+</div>

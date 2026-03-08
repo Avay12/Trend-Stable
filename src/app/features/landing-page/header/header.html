@@ -1,0 +1,66 @@
+<nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" [class.bg-background/80]="isScrolled()"
+  [class.backdrop-blur-xl]="isScrolled()" [class.border-b]="isScrolled()" [class.border-border/50]="isScrolled()"
+  [class.shadow-sm]="isScrolled()" [class.bg-transparent]="!isScrolled()">
+  <div class="container px-4">
+    <div class="flex items-center justify-between h-16 md:h-20"><a class="flex items-center" href="/"><img
+          src="/app-logo.png" alt="SmmStable" class="h-12 md:h-16 w-auto"></a>
+      <div class="hidden md:flex items-center gap-8"><a href="#features" (click)="onNavClick($event, 'features')"
+          class="text-muted-foreground hover:text-foreground transition-colors font-medium text-sm">Features</a><a
+          href="#services" (click)="onNavClick($event, 'services')"
+          class="text-muted-foreground hover:text-foreground transition-colors font-medium text-sm">Services</a><a
+          href="#how-to" (click)="onNavClick($event, 'how-to')"
+          class="text-muted-foreground hover:text-foreground transition-colors font-medium text-sm">How
+          It Works</a>
+        <div class="flex items-center gap-3 ml-4"><a
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-accent hover:text-accent-foreground h-9 rounded-md px-3 font-medium"
+            href="/login">Sign In</a><a
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-primary text-primary-foreground hover:bg-primary/90 h-9 rounded-xl px-5 font-medium"
+            href="/signup">Get Started</a></div>
+      </div><button (click)="toggleMobileMenu()" class="md:hidden p-2 rounded-lg hover:bg-muted/50 transition-colors"
+        aria-label="Toggle menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="lucide lucide-menu w-6 h-6">
+          <line x1="4" x2="20" y1="12" y2="12"></line>
+          <line x1="4" x2="20" y1="6" y2="6"></line>
+          <line x1="4" x2="20" y1="18" y2="18"></line>
+        </svg></button>
+    </div>
+  </div>
+
+  <!-- Mobile Menu Overlay -->
+  @if (isMobileMenuOpen()) {
+  <div class="fixed inset-0 bg-black/50 md:hidden top-16" (click)="closeMobileMenu()">
+  </div>
+  }
+
+  <!-- Mobile Menu Dropdown -->
+  @if (isMobileMenuOpen()) {
+  <div class="md:hidden bg-background border-b z-80 border-border/50 shadow-lg animate-fade-in-up"
+    style="position: relative; z-index: 80;" (click)="$event.stopPropagation()">
+    <div class="container px-4 py-4 space-y-3">
+      <a href="#features" (click)="onNavClick($event, 'features')"
+        class="block px-4 py-3 rounded-lg text-muted-foreground hover:bg-secondary/50 hover:text-foreground transition-colors">
+        Features
+      </a>
+      <a href="#services" (click)="onNavClick($event, 'services')"
+        class="block px-4 py-3 rounded-lg text-muted-foreground hover:bg-secondary/50 hover:text-foreground transition-colors">
+        Services
+      </a>
+      <a href="#how-to" (click)="onNavClick($event, 'how-to')"
+        class="block px-4 py-3 rounded-lg text-muted-foreground hover:bg-secondary/50 hover:text-foreground transition-colors">
+        How It Works
+      </a>
+      <div class="pt-3 border-t border-border/50 space-y-2">
+        <a routerLink="/login"
+          class="block w-full text-center px-4 py-3 rounded-lg hover:bg-primary hover:text-accent-foreground transition-colors">
+          Sign In
+        </a>
+        <a routerLink="/signup"
+          class="block w-full text-center px-4 py-3 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">
+          Get Started
+        </a>
+      </div>
+    </div>
+  </div>
+  }
+</nav>

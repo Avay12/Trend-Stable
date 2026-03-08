@@ -1,0 +1,110 @@
+<div
+  class="glass-card rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh] w-80 sm:w-96 md:w-[400px] md:bg-card z-50">
+  <!-- Header -->
+  <div class="p-4 border-b border-border/50 flex items-center justify-between sticky top-0 z-10">
+    <div class="flex items-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+        class="text-primary w-5 h-5" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+      </svg>
+      <h3 class="font-semibold">Notifications</h3>
+    </div>
+    <button (click)="close.emit()"
+      class="md:hidden inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 w-8">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+  </div>
+
+  <!-- List -->
+  <div class="overflow-y-auto flex-1 p-2 space-y-2 custom-scrollbar">
+    @if (notificationService.notifications().length === 0) {
+    <div class="flex flex-col items-center justify-center py-12 text-muted-foreground gap-3">
+      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        class="text-muted-foreground/30 w-12 h-12 mb-3">
+        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+      </svg>
+      <p class="text-sm text-muted-foreground">No notifications yet</p>
+    </div>
+    } @else {
+    @for (notification of notificationService.notifications(); track notification._id) {
+    <div
+      class="relative group p-3 rounded-lg border border-border/50 bg-secondary/20 hover:bg-secondary/40 transition-all cursor-pointer"
+      [class.opacity-60]="notification.isRead" (click)="markAsRead(notification)">
+      <div class="flex gap-3">
+        <!-- Icon based on type (placeholder logic for now) -->
+        <div class="mt-1 shrink-0 w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+          @if(notification.type === 'wallet' || notification.title.includes('Funds') ||
+          notification.title.includes('Balance')) {
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
+            <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
+            <path d="M18 12a2 2 0 0 0 0 4h4v-4Z" />
+          </svg>
+          } @else {
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="16" x2="12" y2="12" />
+            <line x1="12" y1="8" x2="12.01" y2="8" />
+          </svg>
+          }
+        </div>
+
+        <div class="flex-1 min-w-0">
+          <div class="flex justify-between items-start gap-2">
+            <h4 class="font-medium text-sm truncate pr-6" [class.text-muted-foreground]="notification.isRead">{{
+              notification.title }}</h4>
+          </div>
+          <p class="text-xs text-muted-foreground mt-0.5 line-clamp-2">{{ notification.message }}</p>
+          <p class="text-[10px] text-muted-foreground/60 mt-1.5">{{ notification.createdAt | date:'short' }}</p>
+        </div>
+      </div>
+
+      <!-- Delete Button (visible on hover or generic) -->
+      <button (click)="deleteNotification($event, notification._id)"
+        class="absolute top-3 right-3 p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md transition-colors opacity-0 group-hover:opacity-100 md:opacity-0 focus:opacity-100 touched-opacity"
+        title="Delete">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 6h18" />
+          <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+          <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+          <line x1="10" y1="11" x2="10" y2="17" />
+          <line x1="14" y1="11" x2="14" y2="17" />
+        </svg>
+      </button>
+
+      @if(!notification.isRead) {
+      <span class="absolute bottom-3 right-3 w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+      }
+    </div>
+    }
+    }
+  </div>
+
+  <!-- Footer -->
+  @if (notificationService.notifications().length > 0) {
+  <div class="p-3 border-t border-border/50 sticky bottom-0">
+    <button (click)="clearAll()"
+      class="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-lg hover:bg-destructive/10 text-destructive text-sm font-medium transition-colors">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 6h18" />
+        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+      </svg>
+      Clear all notifications
+      <span class="text-xs opacity-60">({{ notificationService.notifications().length }})</span>
+    </button>
+  </div>
+  }
+</div>

@@ -1,0 +1,193 @@
+<!-- Unified Responsive Order Modal -->
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 transition-all duration-300"
+  [class.pointer-events-none]="!isOpen()" [class.opacity-0]="!isOpen()">
+
+  <!-- Backdrop -->
+  <div class="absolute inset-0 bg-background/80 backdrop-blur-sm transition-opacity duration-300"
+    [class.opacity-0]="!isOpen()" (click)="close()"></div>
+
+  <!-- Modal Container -->
+  <div
+    class="relative w-full sm:max-w-lg bg-card rounded-2xl shadow-2xl border border-border flex flex-col max-h-[85vh] overflow-hidden transform transition-all duration-300"
+    [class]="!isOpen() ? 'scale-95 opacity-0' : 'scale-100 opacity-100'" (click)="stopPropagation($event)">
+
+    <!-- Header -->
+    <div class="p-4 sm:p-5 border-b border-border flex items-center justify-between bg-card z-10">
+      <div class="flex items-center gap-3 overflow-hidden">
+        <div class="shrink-0 scale-90 sm:scale-100" [innerHTML]="getPlatformIcon(localDetails().title)"></div>
+        <div class="min-w-0">
+          <h2 class="font-bold text-base sm:text-lg leading-tight truncate pr-2">{{ 'COMPLETE_ORDER' | translate }}</h2>
+          <p class="text-xs text-muted-foreground truncate">{{ localDetails().title }}</p>
+        </div>
+      </div>
+      <button class="shrink-0 w-8 h-8 rounded-full hover:bg-muted flex items-center justify-center transition-colors"
+        (click)="close()" aria-label="Close modal">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="text-muted-foreground">
+          <path d="M18 6 6 18"></path>
+          <path d="m6 6 12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Scrollable Content -->
+    <div class="p-4 sm:p-5 space-y-4 sm:space-y-6 overflow-y-auto custom-scrollbar">
+
+      <!-- Stats Grid -->
+      <div class="grid grid-cols-3 gap-2 sm:gap-3">
+        <div
+          class="bg-muted/30 rounded-xl p-2 sm:p-3 border border-border flex flex-col items-center justify-center text-center">
+          <p class="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider font-semibold mb-1">{{
+            'PRICE_PER_1000' |
+            translate }}</p>
+          <div class="text-base sm:text-lg font-bold text-primary">
+            {{currencyService.currentCurrency()}}
+            {{(currencyService.convert(localDetails().pricePer1000) * providerService.appRange()) | number:'1.2-2'}}
+          </div>
+        </div>
+        <div
+          class="bg-muted/30 rounded-xl p-2 sm:p-3 border border-border flex flex-col items-center justify-center text-center">
+          <p class="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider font-semibold mb-1">{{
+            'MIN_QUANTITY' |
+            translate }}</p>
+          <p class="text-base sm:text-lg font-bold text-foreground">{{ localDetails().min }}</p>
+        </div>
+        <div
+          class="bg-muted/30 rounded-xl p-2 sm:p-3 border border-border flex flex-col items-center justify-center text-center">
+          <p class="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider font-semibold mb-1">{{
+            'MAX_QUANTITY' |
+            translate }}</p>
+          <p class="text-base sm:text-lg font-bold text-foreground">{{ localDetails().max }}</p>
+        </div>
+      </div>
+
+      <!-- Quantity Control -->
+      <div class="space-y-2 sm:space-y-3">
+        <label class="text-sm font-medium text-foreground ml-1">{{ 'QUANTITY' | translate }}</label>
+        <div class="flex items-center gap-2 sm:gap-3">
+          <button (click)="handleDecrement()"
+            class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-muted/50 border border-border flex items-center justify-center hover:bg-primary/10 hover:border-primary/30 hover:text-primary transition-all active:scale-95">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14"></path>
+            </svg>
+          </button>
+
+          <div class="flex-1 relative">
+            <input type="number"
+              class="w-full h-10 sm:h-12 rounded-xl bg-muted/30 border border-border text-center font-bold text-base sm:text-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              [min]="localDetails().min" [max]="localDetails().max" [(ngModel)]="localDetails().quantity"
+              (input)="getQuantity($event)">
+          </div>
+
+          <button (click)="handleIncrement()"
+            class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-muted/50 border border-border flex items-center justify-center hover:bg-primary/10 hover:border-primary/30 hover:text-primary transition-all active:scale-95">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14"></path>
+              <path d="M12 5v14"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- URL Input -->
+      <div class="space-y-2 sm:space-y-3">
+        <label class="text-sm font-medium text-foreground ml-1">
+          {{ 'PROFILE_URL' | translate }}
+        </label>
+        <div class="relative group">
+          <div
+            class="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+            </svg>
+          </div>
+          <input type="text"
+            class="w-full h-10 sm:h-12 pl-12 pr-4 rounded-xl bg-muted/30 border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all placeholder:text-muted-foreground/50"
+            placeholder="https://..." [(ngModel)]="orderDetails().profileUrl">
+        </div>
+        <p class="text-xs text-muted-foreground ml-1">
+          {{ 'ENTER_PROFILE_URL' | translate }}
+        </p>
+      </div>
+
+      <!-- Total Price Summary -->
+      <div class="bg-primary/5 rounded-xl p-3 sm:p-4 border border-primary/10 flex justify-between items-center">
+        <span class="text-sm font-medium text-muted-foreground">{{ 'TOTAL_PRICE' | translate }}</span>
+        <div class="text-xl sm:text-2xl font-bold text-primary">
+          {{currencyService.currentCurrency()}}
+          {{(currencyService.convert(localDetails().total) * providerService.appRange()) | number:'1.2-2'}}
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer Actions -->
+    <div class="p-4 sm:p-5 border-t border-border bg-muted/10 grid grid-cols-2 gap-3">
+      <button (click)="addToCart()"
+        class="h-10 sm:h-12 rounded-xl bg-background border border-border font-semibold text-sm hover:bg-muted text-foreground transition-all flex items-center justify-center gap-2 shadow-sm hover:shadow active:scale-[0.98]">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="8" cy="21" r="1"></circle>
+          <circle cx="19" cy="21" r="1"></circle>
+          <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path>
+        </svg>
+        {{ 'ADD_TO_CART' | translate }}
+      </button>
+
+      @if (insufficientBalance()) {
+      <div class="col-span-2 sm:col-span-1">
+        <div
+          class="mb-2 rounded-lg border border-red-500/20 bg-red-500/10 p-2 text-red-500 flex items-center justify-between text-xs">
+          <div class="flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-alert-circle">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" x2="12" y1="8" y2="12" />
+              <line x1="12" x2="12.01" y1="16" y2="16" />
+            </svg>
+            <span class="font-medium">Insufficient Balance</span>
+          </div>
+          <span class="font-medium text-foreground">
+            {{currencyService.currentCurrency()}}
+            {{currencyService.convert(balanceNeeded()) | number:'1.2-2'}}
+          </span>
+        </div>
+        <button (click)="close()" routerLink="/user-dashboard/wallet"
+          class="w-full h-10 sm:h-12 rounded-xl bg-[#00D1FF] text-black font-bold hover:bg-[#00D1FF]/90 transition-all shadow-lg shadow-[#00D1FF]/20 flex items-center justify-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="lucide lucide-zap">
+            <path
+              d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z" />
+          </svg>
+          Top Up Wallet
+        </button>
+      </div>
+      } @else {
+      <button (click)="onConfirm()" [disabled]="!orderDetails().profileUrl"
+        class="h-10 sm:h-12 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:bg-primary/90 transition-all flex items-center justify-center gap-2 shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none">
+        @if (loading()) {
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-spin">
+          <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
+        </svg>
+        }
+        @else {
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+        </svg>
+        {{ 'ORDER_NOW' | translate }}
+        }
+      </button>
+      }
+    </div>
+
+  </div>
+</div>

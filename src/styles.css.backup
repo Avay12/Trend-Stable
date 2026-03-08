@@ -1,0 +1,288 @@
+@import 'tailwindcss';
+
+@theme {
+  /* --- Color Palette --- */
+  /* This automatically generates classes like bg-background, text-secondary, border-border, etc. */
+  --color-background: #0f1f24;
+  --color-foreground: #ffffff;
+  --color-card: #1a2f36;
+  --color-card-foreground: #ffffff;
+  --color-primary: #0f1f24;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #20d9d9;
+  --color-secondary-foreground: #0f1f24;
+  --color-muted: #2a4a52;
+  --color-muted-foreground: #a0b5bc;
+  --color-accent: #20d9d9;
+  --color-accent-foreground: #0f1f24;
+  --color-border: #2a4a52;
+  --color-input: #1a2f36;
+  --color-ring: #20d9d9;
+
+  /* --- Typography --- */
+  --font-sans: 'system-ui', '-apple-system', 'sans-serif';
+
+  /* --- Custom Animations --- */
+  --animation-fade-in: fadeIn 0.6s ease-in;
+  --animation-slide-up: slideUp 0.6s ease-out;
+  --animation-slide-in-right: slideInRight 0.6s ease-out;
+  --animation-glow: glow 2s ease-in-out infinite;
+  --animation-pulse-glow: pulse-glow 2s ease-in-out infinite;
+  --animation-float: float 6s ease-in-out infinite;
+  --animation-float-slow: float-slow 8s ease-in-out infinite;
+  --animation-float-reverse: float-reverse 7s ease-in-out infinite;
+  --animation-orbit: orbit 15s linear infinite;
+  --animation-orbit-reverse: orbit-reverse 20s linear infinite;
+
+  /* --- Keyframes --- */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes glow {
+
+    0%,
+    100% {
+      box-shadow: 0 0 20px rgba(32, 217, 217, 0.3);
+    }
+
+    50% {
+      box-shadow: 0 0 30px rgba(32, 217, 217, 0.6);
+    }
+  }
+
+  @keyframes pulse-glow {
+
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.8;
+    }
+  }
+
+  @keyframes float {
+
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  @keyframes float-slow {
+
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+
+    50% {
+      transform: translateY(-30px);
+    }
+  }
+
+  @keyframes float-reverse {
+
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+
+    50% {
+      transform: translateY(20px);
+    }
+  }
+
+  @keyframes orbit {
+    0% {
+      transform: rotate(0deg) translateX(100px) rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg) translateX(100px) rotate(-360deg);
+    }
+  }
+
+  @keyframes orbit-reverse {
+    0% {
+      transform: rotate(0deg) translateX(80px) rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(-360deg) translateX(80px) rotate(360deg);
+    }
+  }
+}
+
+/* --- Base Styles --- */
+* {
+  @apply border-border outline-ring/50;
+  transition-property: color, background-color, border-color, box-shadow;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
+
+body {
+  @apply bg-background text-foreground;
+  line-height: 1.6;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  scroll-behavior: smooth;
+}
+
+/* --- Scrollbar Customization --- */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-secondary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-secondary);
+  opacity: 0.8;
+}
+
+/* --- Form Elements --- */
+input,
+textarea,
+select {
+  @apply bg-input text-foreground border border-border rounded-lg px-4 py-2 transition-colors;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  @apply border-secondary bg-input outline-none;
+}
+
+input::placeholder,
+textarea::placeholder {
+  @apply text-muted-foreground;
+}
+
+/* --- Components & Utilities --- */
+button {
+  @apply transition-all duration-200 cursor-pointer;
+}
+
+button:disabled {
+  @apply opacity-50 cursor-not-allowed;
+}
+
+a {
+  @apply text-secondary hover:opacity-80 transition-opacity;
+}
+
+::selection {
+  @apply bg-secondary text-primary;
+}
+
+.container-max {
+  @apply max-w-6xl mx-auto;
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #ffffff 0%, #20d9d9 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.skeleton {
+  @apply bg-muted/50 animate-pulse rounded;
+}
+
+/* --- Accessibility --- */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* --- Responsive Helpers --- */
+@media (max-width: 640px) {
+  .hidden-sm {
+    display: none;
+  }
+}
+
+@media (min-width: 641px) {
+  .visible-sm {
+    display: none;
+  }
+}
+
+/* --- Additional Utilities --- */
+.gradient-text {
+  background: linear-gradient(135deg, #20d9d9 0%, #00f2ea 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glass-card {
+  background: rgba(26, 47, 54, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.font-display {
+  font-family: var(--font-sans);
+  font-weight: 700;
+}

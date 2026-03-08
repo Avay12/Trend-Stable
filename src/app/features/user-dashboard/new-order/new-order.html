@@ -1,0 +1,507 @@
+<div class="space-y-6 animate-fade-in-up">
+
+
+  <!-- New Order Header -->
+  <div
+    class="bg-card rounded-xl p-6 shadow-sm border border-border flex items-center gap-4 relative overflow-hidden group">
+    <!-- Background Glow -->
+    <div
+      class="absolute -right-12 -top-12 w-48 h-48 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors duration-500">
+    </div>
+
+    <div
+      class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-inner border border-primary/20 shrink-0 relative z-10">
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        class="lucide lucide-plus-circle">
+        <circle cx="12" cy="12" r="10" />
+        <path d="M8 12h8" />
+        <path d="M12 8v8" />
+      </svg>
+    </div>
+    <div class="relative z-10">
+      <h1 class="text-2xl font-bold tracking-tight flex items-center gap-2">
+        New Order
+        <span
+          class="text-xs font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">Create</span>
+      </h1>
+      <p class="text-sm text-muted-foreground mt-1">Place a new order for your social media growth.</p>
+    </div>
+  </div>
+
+  <!-- Category Selector -->
+  <div class="bg-card rounded-xl p-4 shadow-sm border border-border">
+    <div
+      class="grid grid-flow-col auto-cols-max gap-3 overflow-x-auto pb-4 sm:grid-flow-row sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 snap-x snap-mandatory custom-scrollbar sm:pb-0 sm:overflow-visible sm:snap-none">
+      @for (cat of categories(); track cat.id) {
+      <button (click)="selectTopCategory(cat)"
+        class="w-auto sm:w-full justify-start flex items-center gap-2 pl-1 pr-3 py-1 rounded-full whitespace-nowrap transition-all duration-300 border group ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 snap-center sm:snap-align-none"
+        [style.backgroundColor]="activeCategory() === cat.id ? cat.color : 'transparent'"
+        [style.borderColor]="activeCategory() === cat.id ? cat.color : ''"
+        [class.border-border]="activeCategory() !== cat.id"
+        [class.hover:border-primary/50]="activeCategory() !== cat.id">
+
+        <div class="w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-300 shrink-0"
+          [style.color]="activeCategory() === cat.id ? 'white' : cat.color"
+          [style.background]="activeCategory() === cat.id ? 'rgba(255,255,255,0.2)' : 'transparent'"
+          [class.bg-muted]="activeCategory() !== cat.id">
+
+          <!-- Simple Icon Mapping -->
+          @if(cat.icon === 'tiktok'){
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="14" height="14" fill="currentColor">
+            <path
+              d="M448 209.9v125.7c-5.1.5-10.3.8-15.6.8-48.8 0-92.6-20.2-124.1-52.6v118.3c0 61.3-49.7 111-111 111S86.3 463.4 86.3 402.1s49.7-111 111-111c6.1 0 12.1.5 17.9 1.4v61.3c-5.5-2.1-11.5-3.3-17.9-3.3-26.8 0-48.5 21.7-48.5 48.5s21.7 48.5 48.5 48.5 48.5-21.7 48.5-48.5V0h67.5c4.8 45.7 35.6 82 79.2 94.6 14.1 4.1 29 6.4 44.9 6.4z" />
+          </svg>
+          }
+          @else if(cat.icon === 'twitch') {
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="14" height="14" fill="currentColor">
+            <path
+              d="M391.17,103.47H352.5v109.7h38.63ZM285,103H246.37V212.75H285ZM120.83,0,24.31,91.42V420.58H140.14V512l96.53-91.42h77.25L487.69,256V0ZM449.07,237.75l-77.22,73.12H294.61l-67.6,64v-64H140.14V36.58H449.07Z" />
+          </svg>
+          } @else if(cat.icon === 'linkedin') {
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="14" height="14" fill="currentColor">
+            <path
+              d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z" />
+          </svg>
+          } @else if(cat.icon === 'discord') {
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" width="14" height="14" fill="currentColor">
+            <path
+              d="M524.531,69.836a1.5,1.5,0,0,0-.764-.7A485.065,485.065,0,0,0,404.081,32.03a1.816,1.816,0,0,0-1.923.91,337.461,337.461,0,0,0-14.9,30.6,447.848,447.848,0,0,0-134.426,0,309.541,309.541,0,0,0-15.135-30.6,1.89,1.89,0,0,0-1.924-.91A483.689,483.689,0,0,0,116.085,69.137a1.712,1.712,0,0,0-.788.676C39.068,183.651,18.186,294.69,28.43,404.354a2.016,2.016,0,0,0,.765,1.375A487.666,487.666,0,0,0,176.02,479.918a1.9,1.9,0,0,0,2.063-.676A348.2,348.2,0,0,0,208.12,430.4a1.86,1.86,0,0,0-1.019-2.588,321.173,321.173,0,0,1-45.868-21.853,1.885,1.885,0,0,1-.185-3.126c3.082-2.309,6.166-4.711,9.109-7.137a1.819,1.819,0,0,1,1.9-.256c96.229,43.917,200.41,43.917,295.5,0a1.812,1.812,0,0,1,1.924.233c2.944,2.426,6.027,4.855,9.132,7.16a1.884,1.884,0,0,1-.162,3.126,301.407,301.407,0,0,1-45.89,21.83,1.875,1.875,0,0,0-1,2.611,391.055,391.055,0,0,0,30.014,48.815,1.864,1.864,0,0,0,2.063.7A486.048,486.048,0,0,0,610.7,405.729a1.882,1.882,0,0,0,.765-1.352C623.729,277.594,590.8,167.234,524.531,69.836ZM222.491,337.58c-28.972,0-52.844-26.587-52.844-59.239S193.056,219.1,222.491,219.1c29.665,0,53.306,26.82,52.843,59.239C275.334,310.993,251.924,337.58,222.491,337.58Zm195.38,0c-28.971,0-52.843-26.587-52.843-59.239S388.437,219.1,417.871,219.1c29.667,0,53.307,26.82,52.844,59.239C470.715,310.993,447.538,337.58,417.871,337.58Z" />
+          </svg>
+          } @else if(cat.icon === 'snapchat') {
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="14" height="14" fill="currentColor">
+            <path
+              d="M233.2 406.5c-40.6 0-38.2 21.6-67.4 21.6-13.6 0-22.3-13.5-59.6-32.5-35-17.8-19.4-44.1 6.3-51.2 16.5-4.5 35.5 2.1 43.1-2.9 8.2-5.4 3-21.7 1.4-23.9-3.3-4.5-9.2-9.2-11.7-22.7-1.4-7.4 4.5-22.1 4.5-22.1s-10.3-26.6-16-36.9c-10.7-19.1-1.7-77.9 33.6-96 25-12.8 56.4-15 88-1.5 5.9 2.5 33.1 14.8 41.5 45.4 6 21.8 1.1 41.9-4.5 53.5-3.3 6.9-10.2 18.5-10.2 18.5s6.2 14.4 4.7 19.3c-2.8 9.3-15.5 12.8-15.3 22.8.2 6.6 4.7 18.1 14.7 25.4 20.3 14.7 34.6 2.3 56.9 14.7 14.6 8.2 3.1 36.8-6.1 41.9-34.5 19.1-41.9 30.2-56.9 30.2-22.7 0-21.1-21.6-60.6-21.6-28.7 0-28.3 18-9.4 39.4 13.5 15.3 47.9 21.4 75 19.1 53.2-4.5 73.1-40.6 77.2-47.5 7.6-13 18.1-13.8 23.9-12.4 15.2 3.6 15.6 19.5 7.4 32.3-9.5 14.9-52.7 61-125.7 65.6-47.6 3-81.5-12-100.9-24.3-19.6-12.4-17-30-17-30s-10 22.3-45 39c-23.7 11.3-46.1 10-53 8.3-9.3-2.3-17.7-11.1-13-23.2 2.8-7.3 11.3-13.2 23.2-16.1 27.5-6.6 59.9-13.5 68.3-25.1 5.9-8.1 3.5-20.9-12.7-20.9z" />
+          </svg>
+          } @else if(cat.icon === 'pinterest') {
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="14" height="14" fill="currentColor">
+            <path
+              d="M204 6.5C101.4 6.5 0 74.9 0 185.6 0 256 39.6 296 63.6 296c9.9 0 15.6-27.6 15.6-35.4 0-9.3-23.7-29.1-23.7-67.8 0-80.4 61.2-137.4 140.4-137.4 68.1 0 118.5 38.7 118.5 109.8 0 53.1-21.3 152.7-90.3 152.7-24.9 0-46.2-18-46.2-43.8 0-37.8 26.4-74.4 26.4-113.4 0-66.2-93.9-54.2-93.9 25.8 0 16.8 2.5 35.4 9.6 50.1-14.8 58-35.9 145.3-35.9 168 0 23.2 32.2 43.6 36 29.8 19.2-66.2 29.2-86.8 45.3-157.6 22.2 41.5 78.4 46.5 104.9 1 31.7 54.5-19.2 88.5-56.9 88.5-108.9 0-77-59.5-126.3-149.3-126.3z" />
+          </svg>
+          } @else if(cat.icon === 'kick') {
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" width="14" height="14" fill="currentColor">
+            <path
+              d="M576 0H0V512H576V0ZM257.6 374.3V312.6L324.9 374.3H406.7L319.3 294.2L403.4 135.5H325.2L257.6 261.3V135.5H190V374.3H257.6Z" />
+          </svg>
+          }
+          @else if(cat.icon === 'instagram') {
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="lucide lucide-instagram">
+            <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+            <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+          </svg>
+          } @else if(cat.icon === 'facebook') {
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="lucide lucide-facebook">
+            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+          </svg>
+          } @else if(cat.icon === 'youtube') {
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="lucide lucide-youtube">
+            <path
+              d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17" />
+            <path d="m10 15 5-3-5-3z" />
+          </svg>
+          } @else if(cat.icon === 'twitter') {
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 512 512" fill="currentColor">
+            <path
+              d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z" />
+          </svg>
+          } @else if(cat.icon === 'music') {
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="14" height="14" fill="currentColor">
+            <path
+              d="M318.7 268.6c-.2-39.7 17.8-69.7 55.7-91.7-21.2-30.7-53.3-47.7-95.7-50.7-40.3-3-84.3 23.5-100.4 23.5-17 0-55.7-22.5-86.5-22.5-63.5 1-131 50.5-131 145.7 0 28.1 5.1 57.1 15.3 86.7 13.6 39.7 62.6 137.1 113.7 135.5 28.6-.7 48.9-20.3 86.1-20.3 36.1 0 54.9 20.3 86.7 20.3 51.6-.8 95.9-89.5 108.9-129.3-71.7-34.1-67.8-101.9-68.8-97.9zM260.4 86.6c31-36.8 28.2-70.4 27.2-82.6-27.4 1.6-59.1 18.7-77.2 39.7-19.9 22.6-31.6 50.5-29.1 80.7 29.7 2.3 57.3-14.9 79.1-37.8z" />
+          </svg>
+          }@else if(cat.icon === 'telegram') {
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" width="14" height="14" fill="currentColor">
+            <path
+              d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm121.8 169.9-40.5 191.1c-3 13.6-11.1 17-22.5 10.6l-62.1-45.8-30 28.9c-3.3 3.3-6.1 6.1-12.5 6.1l4.5-64.3 117.1-105.7c5.1-4.5-1.1-7-7.9-2.5L171.4 282.2l-61.7-19.3c-13.4-4.2-13.6-13.4 2.8-19.8l241.3-93.1c11.2-4.1 21 2.7 16.9 17.9z" />
+          </svg>
+          } @else if(cat.icon === 'spotify'){
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" width="14" height="14" fill="currentColor">
+            <path
+              d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm113.6 365.4c-4.6 7.6-14.4 10-22 5.4-60.2-36.8-136.1-45.1-225.6-24.6-8.7 2-17.4-3.4-19.4-12.1-2-8.7 3.4-17.4 12.1-19.4 97.9-22.4 182.5-12.7 251.5 29.4 7.6 4.6 10 14.4 5.4 22zm31.4-69.8c-5.8 9.4-18.1 12.3-27.5 6.5-68.9-42.4-173.9-54.7-255.1-30-10.6 3.2-21.8-2.8-25-13.4-3.2-10.6 2.8-21.8 13.4-25 92.7-28.1 207.9-14.5 287.1 34.4 9.4 5.8 12.3 18.1 6.5 27.5zm2.7-72.7c-82.6-49-219.1-53.5-298-29.5-12.7 3.9-26.1-3.3-30-16-3.9-12.7 3.3-26.1 16-30 90.6-27.5 241.2-22.2 336.6 33.6 11.6 6.9 15.4 21.9 8.5 33.5-6.9 11.6-21.9 15.4-33.5 8.5z" />
+          </svg>
+          }@else if(cat.icon === 'reddit'){
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="14" height="14" fill="currentColor">
+            <path
+              d="M440.3 203.5c-15 0-28.7 6.3-38.3 16.4-35.7-25.3-84.4-41.6-138.1-43.3l28.8-135.1 93.5 19.9c.4 20.6 17.2 37.2 37.9 37.2 20.9 0 38-17 38-38s-17-38-38-38c-14.6 0-27.3 8.3-33.6 20.4L277.4 20.4c-4.7-1-9.4 2-10.4 6.7l-31.2 146.8c-54.5 1.2-104 17.5-140.1 43.9-9.6-9.9-23.1-16-38-16-29.1 0-52.7 23.6-52.7 52.7 0 21.2 12.7 39.4 30.8 47.7-.7 4.1-1.1 8.2-1.1 12.4 0 74.7 99.4 135.3 221.9 135.3s221.9-60.6 221.9-135.3c0-4.3-.4-8.6-1.2-12.7 17.7-8.5 29.9-26.6 29.9-47.4 0-29.1-23.6-52.7-52.7-52.7zM167.1 303.6c0-17.4 14.1-31.5 31.5-31.5s31.5 14.1 31.5 31.5-14.1 31.5-31.5 31.5-31.5-14.1-31.5-31.5zm176.6 81.4c-22.4 22.4-65.7 24-87.7 24s-65.3-1.6-87.7-24c-3.6-3.6-3.6-9.4 0-13s9.4-3.6 13 0c16.2 16.2 52.1 18.7 74.7 18.7s58.5-2.5 74.7-18.7c3.6-3.6 9.4-3.6 13 0s3.6 9.4 0 13zm1.2-50c-17.4 0-31.5-14.1-31.5-31.5s14.1-31.5 31.5-31.5 31.5 14.1 31.5 31.5-14.1 31.5-31.5 31.5z" />
+          </svg>
+
+          }
+          @else {
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="lucide lucide-more-horizontal">
+            <circle cx="12" cy="12" r="1" />
+            <circle cx="19" cy="12" r="1" />
+            <circle cx="5" cy="12" r="1" />
+          </svg>
+          }
+        </div>
+        <span class="font-medium text-sm" [class.text-white]="activeCategory() === cat.id"
+          [class.text-foreground]="activeCategory() !== cat.id">
+          {{cat.name}}
+        </span>
+        <span class="text-xs ml-1" [class.text-white/60]="activeCategory() === cat.id"
+          [class.text-muted-foreground]="activeCategory() !== cat.id">
+          ({{ categoryCounts()[cat.id] || 0 }})
+        </span>
+      </button>
+      }
+    </div>
+  </div>
+
+  @if (isLoadingServices()) {
+  <div class="flex justify-center items-center py-20 min-h-[60vh]">
+    <div class="flex flex-col items-center gap-4">
+      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        class="lucide lucide-loader-2 animate-spin text-primary">
+        <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+      </svg>
+      <p class="text-sm text-muted-foreground animate-pulse">Loading services...</p>
+    </div>
+  </div>
+  } @else {
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6">
+
+    <!-- Left Column: Order Form -->
+    <div id="order-form-container"
+      class="xl:col-span-3 space-y-6 bg-card rounded-xl p-6 shadow-sm border border-border relative overflow-hidden transition-all duration-300"
+      [class.bg-primary/5]="createdOrder()" [class.border-primary/20]="createdOrder()">
+
+      @if (createdOrder()) {
+      <!-- Success Message (Inline) -->
+      <div class="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="text-primary">
+              <path d="M20 6 9 17l-5-5" />
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-xl font-bold text-primary">Order Received</h2>
+            <p class="text-sm text-primary/80">Your order has been placed successfully.</p>
+          </div>
+        </div>
+      </div>
+      }
+
+      <!-- Header / Tabs -->
+      <div class="flex items-center justify-between mb-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <h1 class="text-xl font-bold">New order</h1>
+        <div class="flex bg-muted rounded-full p-1">
+          <button (click)="setOrderType('new')" [class.bg-white]="orderType() === 'new'"
+            [class.text-primary]="orderType() === 'new'" [class.shadow-sm]="orderType() === 'new'"
+            class="px-4 py-1.5 rounded-full text-sm font-medium transition-all text-muted-foreground">
+            New order
+          </button>
+          <button (click)="setOrderType('favorites')" [class.bg-white]="orderType() === 'favorites'"
+            [class.text-primary]="orderType() === 'favorites'" [class.shadow-sm]="orderType() === 'favorites'"
+            class="px-4 py-1.5 rounded-full text-sm font-medium transition-all text-muted-foreground">
+            Favorites
+          </button>
+        </div>
+      </div>
+
+      <!-- Refund Notice -->
+      <div
+        class="mb-6 p-3 rounded-lg bg-green-500/10 border border-green-500/20 text-green-600 text-sm font-medium animate-in fade-in slide-in-from-bottom-3 duration-300">
+        Refund Service is not currently available so, Use working service with low quantity in short way.
+      </div>
+
+      <!-- Form Fields -->
+      <div class="space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-300">
+
+        <!--search Field-->
+        <div class="space-y-2">
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-muted-foreground">Search</label>
+          <input type="text" placeholder="Search (Category or Service ID)" [ngModel]="searchQuery()"
+            (ngModelChange)="onSearch($event)" class="w-full p-3 rounded-lg border bg-muted/30 text-sm">
+        </div>
+
+        <!-- Category Input with Dropdown -->
+        <div class="space-y-2 relative">
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-muted-foreground">Category</label>
+
+          <div (click)="toggleCategoryDropdown()"
+            class="flex items-center justify-between w-full p-3 rounded-lg border bg-muted/30 text-sm cursor-pointer hover:bg-muted/50 transition-colors">
+            <div class="flex items-center gap-2 overflow-hidden">
+              @if(formSelectedCategory()) {
+              <div [innerHTML]="getPlatformIcon(formSelectedCategory())" class="shrink-0"></div>
+              <span class="truncate font-medium">{{ formSelectedCategory() }}</span>
+              } @else {
+              <span class="text-muted-foreground">Select a category</span>
+              }
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-chevron-down opacity-50 transition-transform duration-200"
+              [class.rotate-180]="isCategoryDropdownOpen()">
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          </div>
+
+          <!-- Dropdown List -->
+          @if (isCategoryDropdownOpen()) {
+          <div
+            class="absolute z-50 w-full mt-1 bg-card border border-border rounded-lg shadow-xl max-h-[300px] overflow-y-auto custom-scrollbar animate-in fade-in-0 zoom-in-95 duration-200">
+            @for (cat of uniqueFormCategories(); track cat) {
+            <button (click)="selectFormCategory(cat)"
+              class="w-full text-left px-3 py-2.5 text-sm hover:bg-muted transition-colors flex items-center justify-between group">
+              <div class="flex items-center gap-2">
+                <div [innerHTML]="getPlatformIcon(cat)" class="shrink-0"></div>
+                <span [class.text-primary]="formSelectedCategory() === cat"
+                  [class.font-medium]="formSelectedCategory() === cat">
+                  {{ cat }}
+                </span>
+              </div>
+              @if(formSelectedCategory() === cat) {
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="text-primary">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              }
+            </button>
+            }
+            @if (uniqueFormCategories().length === 0) {
+            <div class="px-3 py-4 text-center text-sm text-muted-foreground">
+              No categories found
+            </div>
+            }
+          </div>
+          }
+        </div>
+
+        <!-- Service Select -->
+        <div class="space-y-2">
+          <label class="text-sm font-medium leading-none text-muted-foreground">Service</label>
+          <div class="relative">
+            <select [ngModel]="selectedServiceId()" (ngModelChange)="selectedServiceId.set(+$event)"
+              class="flex h-12 w-full items-center justify-between rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 appearance-none pl-4 pr-10 text-ellipsis overflow-hidden">
+              @for (service of filteredServices(); track service.service) {
+              <option [value]="service.service">{{service.service}} - {{service.name}} -
+                {{currencyService.currentCurrency().symbol}}
+                {{currencyService.convert(service.rate) * providerService.appRange() | number:'1.2-2'}}
+              </option>
+              }
+            </select>
+            <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none text-muted-foreground">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notes Section -->
+        <div class="mt-6 pt-6 border-t border-border/50">
+          <p class="text-sm font-medium text-foreground mb-3">Notes:</p>
+          <ul class="space-y-2 text-sm text-muted-foreground">
+            <li class="flex items-start gap-2">
+              <span>-</span>
+              <span>When the service is busy, the starting speed of the process changes.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span>-</span>
+              <span>Do not place the second order on the same link before your order is completed in the system.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span>-</span>
+              <span>In case of any problems with the service, please contact support.</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Link -->
+        <div class="space-y-2">
+          <label class="text-sm font-medium leading-none text-muted-foreground">Link</label>
+          <input type="text" [ngModel]="link()" (ngModelChange)="link.set($event)"
+            class="flex h-11 w-full rounded-lg border border-input bg-muted/50 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+        </div>
+
+        <!-- Quantity -->
+        <div class="space-y-2">
+          <label class="text-sm font-medium leading-none text-muted-foreground">Quantity</label>
+          <input type="number" [ngModel]="quantity()" (ngModelChange)="quantity.set($event)"
+            class="flex h-11 w-full rounded-lg border border-input bg-muted/50 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+          <p class="text-[11px] text-muted-foreground mt-1">Min: {{selectedService()?.min}} - Max:
+            {{selectedService()?.max}}</p>
+        </div>
+
+        <!-- Average Time -->
+        @if(selectedService()?.average_time){
+        <div class="space-y-2">
+          <label class="text-sm font-medium leading-none text-muted-foreground">Average Time</label>
+          <div
+            class="flex h-11 w-full items-center rounded-lg border border-input bg-muted/30 px-3 text-sm text-muted-foreground">
+            {{ formatTime(selectedService()?.average_time) }}
+          </div>
+        </div>
+        }
+        <!-- Charge -->
+        <div class="space-y-2">
+          <label class="text-sm font-medium leading-none text-muted-foreground">Charge</label>
+          <div
+            class="flex h-11 w-full items-center rounded-lg border border-input bg-muted/30 px-3 text-sm text-muted-foreground">
+            {{currencyService.currentCurrency().symbol}}
+            {{currencyService.convert(totalCharge()) * providerService.appRange() | number:'1.2-2'}}
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        @if (insufficientBalance()) {
+        <div
+          class="mb-4 rounded-lg border border-red-500/20 bg-red-500/10 p-4 text-red-500 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-alert-circle">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" x2="12" y1="8" y2="12" />
+              <line x1="12" x2="12.01" y1="16" y2="16" />
+            </svg>
+            <span class="font-medium">Insufficient Balance</span>
+          </div>
+          <span class="text-sm opacity-80">Need {{ currencyService.currentCurrency().symbol }}{{
+            (currencyService.convert(balanceNeeded() * providerService.appRange()) | number:'1.2-2') }} more</span>
+        </div>
+
+        <button routerLink="/dashboard/payment"
+          class="w-full h-12 rounded-lg bg-primary text-black font-bold hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20 flex items-center justify-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="lucide lucide-zap">
+            <path
+              d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z" />
+          </svg>
+          Top Up Wallet
+        </button>
+        } @else {
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
+          <button (click)="onConfirm()"
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 ng-tns-c1179443377-0"
+            [disabled]="loading()">
+
+            @if (loading()) {
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-loader-2 w-4 h-4 animate-spin">
+              <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
+            </svg>
+            }
+            @else {
+            Submit
+            }
+          </button>
+          <button (click)="addToCart()"
+            class="h-11 rounded-lg bg-secondary/10 text-white font-medium hover:bg-secondary/20 transition-colors shadow-sm flex items-center justify-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="8" cy="21" r="1"></circle>
+              <circle cx="19" cy="21" r="1"></circle>
+              <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path>
+            </svg>
+            Add to Cart
+          </button>
+        </div>
+        }
+
+      </div>
+
+
+    </div>
+
+    <!-- Right Column: Info & Stats -->
+    <div class="space-y-6 xl:col-span-2">
+
+      <!-- Color Legend -->
+      <div class="bg-card rounded-xl p-6 shadow-sm border border-border">
+        <div class="flex flex-col sm:flex-row items-start justify-between :items-center gap-4">
+          <div class="p-2.5 bg-[#2E8B57] rounded-xl text-white shadow-md shadow-[#2E8B57]/20">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-bell">
+              <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+              <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-bold text-[15px] text-foreground/90 mb-1.5">SMM Service Service Color Categorization System
+            </h3>
+            <div class="flex flex-wrap gap-4 text-xs font-medium">
+              <div class="flex items-center gap-1.5">
+                <span class="w-3 h-3 rounded-full bg-yellow-600 shadow-sm border border-white/20"></span>
+                <span class="text-muted-foreground">Basic</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span class="w-3 h-3 rounded-full bg-green-600 shadow-sm border border-white/20"></span>
+                <span class="text-muted-foreground">Medium</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span class="w-3 h-3 rounded-full bg-blue-600 shadow-sm border border-white/20"></span>
+                <span class="text-muted-foreground">Elite</span>
+              </div>
+            </div>
+          </div>
+          <button
+            class="sm:ml-auto w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold px-4 py-2 rounded-lg transition-all shadow-sm">
+            See details
+          </button>
+        </div>
+      </div>
+
+      <!-- Best Sale List -->
+      <div class="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
+        <div class="flex justify-between items-center px-4 py-3 bg-muted/30 border-b border-border">
+          <span class="text-xs font-semibold text-muted-foreground">Best Sale Services</span>
+          <span class="text-xs font-semibold text-muted-foreground">Success Rate</span>
+        </div>
+
+        <div class="divide-y divide-border">
+          @for (item of bestSelling(); track item.name) {
+          <div class="p-4 hover:bg-muted/20 transition-colors group cursor-pointer">
+            <div class="flex justify-between items-start gap-3">
+              <div class="flex gap-2 hover:text-green-400">
+                <span [class]="'mt-1.5 w-2 h-2 shrink-0 rounded-full ' + getTypeColor(item.type)"></span>
+                <div>
+                  <p
+                    class="text-[13px] font-medium leading-relaxed group-hover:text-primary transition-colors line-clamp-2">
+                    {{ item.name }}
+                  </p>
+                  <p class="text-[11px] text-blue-500 mt-1">{{ item.orders }} orders</p>
+                </div>
+              </div>
+              <span
+                class="text-xs font-bold text-[#2E8B57] whitespace-nowrap flex items-center gap-1 bg-[#2E8B57]/10 px-1.5 py-0.5 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
+                  class="lucide lucide-arrow-up">
+                  <path d="m5 12 7-7 7 7" />
+                  <path d="M12 19V5" />
+                </svg>
+                %{{ item.rate }}
+              </span>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+  }
+
+</div>

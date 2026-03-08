@@ -1,0 +1,115 @@
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold tracking-tight">System Statistics</h1>
+      <p class="text-muted-foreground mt-2">Overview of users, orders, and transactions.</p>
+    </div>
+  </div>
+
+  @if (stats()) {
+  <div class="grid gap-6 md:grid-cols-3">
+    <div
+      class="rounded-xl border border-border bg-card text-card-foreground shadow p-6 flex flex-col items-center justify-center text-center">
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary mb-3">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+        <circle cx="9" cy="7" r="4"></circle>
+        <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+      </svg>
+      <h3 class="text-sm font-medium text-muted-foreground uppercase tracking-wider">Total Users</h3>
+      <p class="text-4xl font-bold mt-2">{{ stats().users | number }}</p>
+    </div>
+
+    <div
+      class="rounded-xl border border-border bg-card text-card-foreground shadow p-6 flex flex-col items-center justify-center text-center">
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        class="text-blue-500 mb-3">
+        <circle cx="8" cy="21" r="1"></circle>
+        <circle cx="19" cy="21" r="1"></circle>
+        <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path>
+      </svg>
+      <h3 class="text-sm font-medium text-muted-foreground uppercase tracking-wider">Total Orders</h3>
+      <p class="text-4xl font-bold mt-2">{{ stats().orders | number }}</p>
+    </div>
+
+    <div
+      class="rounded-xl border border-border bg-card text-card-foreground shadow p-6 flex flex-col items-center justify-center text-center">
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        class="text-green-500 mb-3">
+        <rect width="20" height="14" x="2" y="5" rx="2"></rect>
+        <line x1="2" x2="22" y1="10" y2="10"></line>
+      </svg>
+      <h3 class="text-sm font-medium text-muted-foreground uppercase tracking-wider">Total Transactions</h3>
+      <p class="text-4xl font-bold mt-2">{{ stats().transactions | number }}</p>
+    </div>
+  </div>
+
+  <!-- Recent Orders Table -->
+  <div class="rounded-xl border border-border bg-card shadow mt-6">
+    <div class="p-6 border-b border-border">
+      <h3 class="text-lg font-semibold text-foreground">Recent Orders</h3>
+    </div>
+    <div class="p-0">
+      <div class="relative w-full overflow-auto">
+        <table class="w-full caption-bottom text-sm">
+          <thead class="[&_tr]:border-b">
+            <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+              <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">ID</th>
+              <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">User</th>
+              <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Service ID</th>
+              <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Quantity</th>
+              <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Charge</th>
+              <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Status</th>
+              <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Date</th>
+            </tr>
+          </thead>
+          <tbody class="[&_tr:last-child]:border-0">
+            @for (order of stats().recentOrders; track order.id) {
+            <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+              <td class="p-4 align-middle">{{ order.id }}</td>
+              <td class="p-4 align-middle font-medium">
+                <div class="flex flex-col">
+                  <span>{{ order.user?.username || 'Unknown' }}</span>
+                  <span class="text-xs text-muted-foreground">{{ order.user?.email }}</span>
+                </div>
+              </td>
+              <td class="p-4 align-middle">{{ order.serviceId }}</td>
+              <td class="p-4 align-middle">{{ order.quantity }}</td>
+              <td class="p-4 align-middle font-semibold">{{ currencyService.currentCurrency().symbol }}{{
+                currencyService.convert(order.charge) | number:'1.2-2' }}</td>
+              <td class="p-4 align-middle">
+                <span
+                  class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider"
+                  [ngClass]="{
+                             'bg-yellow-500/10 text-yellow-500 border-yellow-500/20': order.status === 'Pending' || order.status === 'In progress' || order.status === 'Processing',
+                             'bg-green-500/10 text-green-500 border-green-500/20': order.status === 'Completed' || order.status === 'Partial',
+                             'bg-red-500/10 text-red-500 border-red-500/20': order.status === 'Canceled' || order.status === 'Refunded'
+                           }">
+                  {{ order.status }}
+                </span>
+              </td>
+              <td class="p-4 align-middle text-muted-foreground whitespace-nowrap">{{ order.createdAt | date:'short' }}
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  } @else {
+  <div class="flex items-center justify-center p-12">
+    <div class="flex flex-col items-center gap-4">
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        class="animate-spin text-primary">
+        <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
+      </svg>
+      <p class="text-muted-foreground">Loading statistics...</p>
+    </div>
+  </div>
+  }
+</div>

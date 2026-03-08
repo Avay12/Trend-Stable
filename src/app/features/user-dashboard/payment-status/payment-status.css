@@ -1,0 +1,129 @@
+.payment-status-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+  padding: 1rem;
+  background-color: transparent ; /* Assumes dashboard has background */
+}
+
+.status-card {
+  background: var(--bg-card, #1e1e1e); /* Fallback */
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  border-radius: 1.5rem;
+  padding: 3rem;
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.icon-wrapper {
+  margin-bottom: 1.5rem;
+  display: inline-flex;
+  padding: 1rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.success .icon-wrapper {
+  color: #10b981; /* Emerald 500 */
+  background: rgba(16, 185, 16, 0.1);
+}
+
+.cancelled .icon-wrapper {
+  color: #ef4444; /* Red 500 */
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.pending .icon-wrapper {
+    color: #3bf63e; /* Blue 500 */
+    background: rgba(118, 246, 59, 0.468);
+}
+
+h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--text-primary, #fff);
+}
+
+p {
+  color: var(--text-secondary, #9ca3af);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  font-size: 0.95rem;
+}
+
+.btn-primary {
+  background: var(--primary-color, #18d85e);
+  color: white;
+}
+
+.btn-primary:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.324));
+  color: var(--text-primary, #ffffffc5);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.05);
+  transform: translateY(-1px);
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Response for smaller screens */
+@media (max-width: 640px) {
+    .status-card {
+        padding: 2rem 1.5rem;
+    }
+    h1 {
+        font-size: 1.5rem;
+    }
+    .actions {
+        flex-direction: column;
+    }
+    button {
+        width: 100%;
+    }
+}

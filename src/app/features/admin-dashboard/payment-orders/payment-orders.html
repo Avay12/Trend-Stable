@@ -1,0 +1,173 @@
+@if (loading()) {
+<div class="flex justify-center items-center py-20 min-h-[60vh]">
+  <div class="flex flex-col items-center gap-4">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      class="lucide lucide-loader-2 animate-spin text-primary">
+      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+    </svg>
+    <p class="text-sm text-muted-foreground animate-pulse">Loading payment orders...</p>
+  </div>
+</div>
+} @else {
+<div class="space-y-6">
+
+  <!-- Header & Search -->
+  <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+    <h1 class="text-2xl font-bold tracking-tight">Payment Orders</h1>
+
+    <div class="flex items-center gap-2 w-full sm:w-auto">
+      <div class="relative w-full sm:w-72">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-muted-foreground" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+        <input type="text" [ngModel]="searchQuery()" (ngModelChange)="onSearch($event)"
+          class="flex h-10 w-full rounded-md border border-input bg-background pl-10 pr-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          placeholder="Search by username..." />
+      </div>
+      <button (click)="checkPaid()"
+        class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 whitespace-nowrap">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 mr-2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+          <polyline points="22 4 12 14.01 9 11.01" />
+        </svg>
+        Check Paid
+      </button>
+    </div>
+  </div>
+
+  <!-- Total Balance Card -->
+  <div class="flex justify-end">
+    <div
+      class="rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden transition-all hover:shadow-md min-w-[200px] max-w-xs">
+      <div class="p-3">
+        <div class="flex items-center justify-between gap-4">
+          <div class="space-y-0.5">
+            <p class="text-xs font-medium text-muted-foreground">Total Balance</p>
+            <h2 class="text-xl font-bold tracking-tight text-primary">
+              {{currencyService.currentCurrency().symbol}} {{currencyService.convert(totalAmountValue()) |
+              number:'1.2-2'}}
+            </h2>
+          </div>
+          <div class="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Table Card -->
+  <div class="rounded-xl border border-border bg-card text-card-foreground shadow-sm overflow-hidden">
+    <div class="relative w-full overflow-auto">
+      <table class="w-full caption-bottom text-sm text-left">
+        <thead class="[&_tr]:border-b">
+          <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+            <th class="h-12 px-4 align-middle font-medium text-muted-foreground">Transaction ID</th>
+            <th class="h-12 px-4 align-middle font-medium text-muted-foreground">User</th>
+            <th class="h-12 px-4 align-middle font-medium text-muted-foreground">Amount</th>
+            <th class="h-12 px-4 align-middle font-medium text-muted-foreground">Gateway</th>
+            <th class="h-12 px-4 align-middle font-medium text-muted-foreground">Status</th>
+            <th class="h-12 px-4 align-middle font-medium text-muted-foreground">Date</th>
+            <th class="h-12 px-4 align-middle font-medium text-muted-foreground">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="[&_tr:last-child]:border-0">
+          @if(payments().length === 0) {
+          <tr>
+            <td colspan="7" class="h-24 text-center text-muted-foreground">No payments found.</td>
+          </tr>
+          } @else {
+          @for (payment of payments(); track payment.transactionId) {
+          <tr class="border-b transition-colors hover:bg-muted/50">
+            <td class="p-4 font-medium">{{ payment.transactionId }}</td>
+            <td class="p-4">{{ payment.user }}</td>
+            <td class="p-4 font-medium">{{ payment.amount | number:'1.2-2' }} {{ payment.currency }}</td>
+            <td class="p-4">
+              <!-- Assuming currency implies gateway or we can add gateway field later if needed, for now using currency -->
+              <div class="flex items-center gap-2">
+                <span class="capitalize">{{ payment.currency }}</span>
+              </div>
+            </td>
+            <td class="p-4">
+              <span
+                class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                [ngClass]="{
+                            'border-transparent bg-green-500/15 text-green-600': payment.status === 'COMPLETED' || payment.status === 'SUCCESS',
+                            'border-transparent bg-yellow-500/15 text-yellow-600': payment.status === 'PENDING',
+                            'border-transparent bg-red-500/15 text-red-600': payment.status === 'FAILED' || payment.status === 'CANCELLED'
+                        }">
+                {{ payment.status }}
+              </span>
+            </td>
+            <td class="p-4 text-muted-foreground whitespace-nowrap">
+              {{ payment.createdAt | date:'medium' }}
+            </td>
+            <td class="p-4">
+              <button (click)="updatePaid(payment.transactionId)"
+                class="inline-flex items-center justify-center rounded-md text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-8 px-3 py-1">
+                Update Paid
+              </button>
+            </td>
+          </tr>
+          }
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex items-center justify-between px-4 py-4 border-t border-border">
+      <div class="text-xs text-muted-foreground">
+        Showing {{ (page() - 1) * limit() + 1 }} to {{ page() * limit() > total() ? total() : page() * limit() }} of {{
+        total() }} entries
+      </div>
+      <div class="flex items-center space-x-2">
+        <button
+          class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-8 w-8 p-0"
+          [disabled]="page() === 1" (click)="onPageChange(page() - 1)">
+          <span class="sr-only">Go to previous page</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+        </button>
+
+        @for(p of visiblePages; track $index) {
+        @if(p === '...') {
+        <span class="text-sm text-muted-foreground px-2">...</span>
+        } @else {
+        <button
+          class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input shadow-sm h-8 w-8"
+          [class.bg-primary]="page() === p" [class.text-primary-foreground]="page() === p"
+          [class.hover:bg-accent]="page() !== p" [class.hover:text-accent-foreground]="page() !== p"
+          (click)="onPageChange(+p)">
+          {{ p }}
+        </button>
+        }
+        }
+
+        <button
+          class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-8 w-8 p-0"
+          [disabled]="page() === totalPages()" (click)="onPageChange(page() + 1)">
+          <span class="sr-only">Go to next page</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+            <path d="m9 18 6-6-6-6" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+}

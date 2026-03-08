@@ -1,0 +1,198 @@
+<div class="space-y-0 sm:space-y-8" [@fadeInUp]>
+    <!-- <div class="animate-fade-in-up">
+        <h1 class="font-display text-3xl font-bold">Orders</h1>
+        <p class="text-muted-foreground mt-1">Create new orders and view your order history</p>
+    </div> -->
+    <div class="animate-fade-in-up animate-delay-100">
+        <div
+            class="rounded-lg hidden md:block border bg-card text-card-foreground shadow-sm glass-card border-border/30 overflow-hidden hover-lift">
+            <div class="p-0">
+                <div class="relative">
+                    <div
+                        class="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2">
+                    </div>
+                    <div class="relative p-6 lg:p-8 flex flex-col lg:flex-row items-center justify-between gap-6">
+                        <div class="flex items-center gap-5">
+                            <div
+                                class="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg shadow-primary/30">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="lucide lucide-plus w-8 h-8 text-white">
+                                    <path d="M5 12h14"></path>
+                                    <path d="M12 5v14"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h2 class="font-display text-2xl font-bold">Create New Order</h2>
+                                <p class="text-muted-foreground mt-1">Browse services and add them to your cart to place
+                                    a new order</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-3 w-full lg:w-auto"><button routerLink="/dashboard/services"
+                                class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 bg-primary text-primary-foreground hover:bg-primary/90 py-2 flex-1 lg:flex-none h-12 px-6 rounded-xl bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity"><svg
+                                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="lucide lucide-shopping-cart w-5 h-5 mr-2">
+                                    <circle cx="8" cy="21" r="1"></circle>
+                                    <circle cx="19" cy="21" r="1"></circle>
+                                    <path
+                                        d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12">
+                                    </path>
+                                </svg>Browse Services</button><button routerLink="/dashboard/cart"
+                                class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 border bg-background hover:text-accent-foreground py-2 flex-1 lg:flex-none h-12 px-6 rounded-xl border-border/50 hover:bg-secondary/50">View
+                                Cart</button></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="animate-fade-in-up animate-delay-200">
+        <div class="hidden sm:block sm:flex sm:items-center sm:gap-3 sm:mb-4"><svg xmlns="http://www.w3.org/2000/svg"
+                width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-history w-5 h-5 text-primary">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                <path d="M3 3v5h5"></path>
+                <path d="M12 7v5l4 2"></path>
+            </svg>
+            <h2 class="font-display text-xl font-semibold">Orders</h2>
+            <div
+                class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80 ml-2">
+                {{filteredOrders().length || 0}} orders</div>
+        </div>
+
+        <!-- Filter Chips -->
+        <!-- Filter Chips (Segmented Control Style) -->
+        <div class="inline-flex items-center bg-muted/50 p-1 rounded-full mb-6 overflow-x-auto max-w-full no-scrollbar">
+            @for (status of filterStatuses; track status.value) {
+            <button (click)="selectedStatus.set(status.value)"
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap"
+                [ngClass]="selectedStatus() === status.value ?
+                'bg-background text-foreground shadow-sm' :
+                'text-muted-foreground hover:text-foreground hover:bg-background/50'">
+
+                @if (status.icon === 'list') {
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="8" y1="6" x2="21" y2="6"></line>
+                    <line x1="8" y1="12" x2="21" y2="12"></line>
+                    <line x1="8" y1="18" x2="21" y2="18"></line>
+                    <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                    <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                    <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                </svg>
+                } @else if (status.icon === 'clock') {
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                } @else if (status.icon === 'loader') {
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
+                </svg>
+                } @else if (status.icon === 'check-circle') {
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                } @else if (status.icon === 'check-check') {
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 6 7 17l-5-5"></path>
+                    <path d="m22 10-7.5 7.5L13 16"></path>
+                </svg>
+                } @else if (status.icon === 'x-circle') {
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
+                }
+
+                {{status.label}}
+            </button>
+            }
+        </div>
+        <div class="space-y-3">
+            @for (item of filteredOrders(); track item.id) {
+            <div class="animate-fade-in-up animate-delay-300">
+                <div
+                    class="rounded-lg border bg-card text-card-foreground shadow-sm glass-card border-border/30 overflow-hidden hover-lift">
+                    <button (click)="toggleOrder(item.id)"
+                        class="w-full p-4 lg:p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4 hover:bg-secondary/30 transition-colors">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center"><svg
+                                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="lucide lucide-package w-6 h-6 text-primary">
+                                    <path
+                                        d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z">
+                                    </path>
+                                    <path d="M12 22V12"></path>
+                                    <path d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7"></path>
+                                    <path d="m7.5 4.27 9 5.15"></path>
+                                </svg></div>
+                            <div class="text-left">
+                                <p class="font-semibold text-lg">{{item.id}}</p>
+                                <p class="text-sm text-muted-foreground">{{item.createdAt | date:'MMM d, y, h:mm a'}}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 lg:gap-4">
+                            <div
+                                class="inline-flex items-center border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 text-foreground capitalize rounded-lg">
+                                {{platform(item.serviceName)}}</div>
+                            <div class="inline-flex items-center px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 hover:bg-primary/80 bg-blue-500/10 text-blue-500 border-blue-500/20 border rounded-lg"
+                                [ngClass]="item.status === 'COMPLETED' ? 'bg-green-500/10 text-green-500' :
+                   item.status === 'PENDING' ? 'bg-yellow-500/10 text-yellow-500' :
+                   item.status === 'IN_PROGRESS' ? 'bg-blue-500/10 text-blue-500' :
+                   'bg-red-500/10 text-red-500'">
+                                {{item.status}}</div>
+
+                            <span class="font-bold text-lg">
+                                {{currencyService.currentCurrency().symbol}}
+                                {{currencyService.convert(item.charge) | number:'1.2-2'}}
+                            </span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round"
+                                class="lucide lucide-chevron-down w-5 h-5 text-muted-foreground transition-transform"
+                                [class.rotate-180]="isOrderExpanded(item.id)">
+                                <path d="m6 9 6 6 6-6"></path>
+                            </svg>
+                        </div>
+                    </button>
+                    @if (isOrderExpanded(item.id)) {
+                    <div [@slideDown] class="border-t border-border/30">
+                        <div class="p-4 lg:p-5 space-y-3">
+                            <div class="flex justify-between items-center py-3 px-4 bg-secondary/30 rounded-xl">
+                                <div>
+                                    <p class="font-medium">{{item.serviceName}}</p>
+                                    <p class="text-sm text-muted-foreground capitalize">
+                                        {{`${platform(item.serviceName)} •
+                                        ${item.quantity} qty`}}</p>
+                                    <p class="text-xs text-muted-foreground mt-1 truncate max-w-md">URL:
+                                        <a [href]="item.link" target="_blank"
+                                            class="text-primary hover:underline">{{item.link}}</a>
+                                    </p>
+                                    <p class="text-xs text-muted-foreground mt-1 truncate max-w-md">Service ID:
+                                        <span class="text-primary">{{item.serviceId}}</span>
+                                    </p>
+                                </div>
+                                <span class="font-semibold">{{currencyService.currentCurrency().symbol}}
+                                    {{currencyService.convert(item.charge) | number:'1.2-2'}}</span>
+                            </div>
+                            <div class="flex flex-wrap gap-2 pt-2">
+                                <!-- Additional order details can go here -->
+                            </div>
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,204 @@
+<div *ngIf="isLoading()" class="flex items-center justify-center min-h-[400px]">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+</div>
+
+<div *ngIf="!isLoading()" class="space-y-8" [@fadeInUp]>
+    <div class="animate-fade-in-up">
+        <h1 class="font-display text-3xl font-bold">Referrals</h1>
+        <p class="text-muted-foreground mt-1">Invite friends and earn {{ stats()?.commissionRate || 5 }}% of their
+            completed orders</p>
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div
+            class="rounded-lg border text-card-foreground shadow-sm bg-card border-border animate-fade-in-up animate-delay-100 hover-lift">
+            <div class="p-6 flex items-center gap-4">
+                <div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary"><svg
+                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="lucide lucide-users w-6 h-6">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg></div>
+                <div>
+                    <p class="text-sm text-muted-foreground">Total Referrals</p>
+                    <p class="font-display text-2xl font-bold">{{ stats()?.totalReferrals }}</p>
+                </div>
+            </div>
+        </div>
+        <div
+            class="rounded-lg border text-card-foreground shadow-sm bg-card border-border animate-fade-in-up animate-delay-200 hover-lift">
+            <div class="p-6 flex items-center gap-4">
+                <div class="w-12 h-12 rounded-lg bg-green-500/10 flex items-center justify-center text-green-500"><svg
+                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="lucide lucide-dollar-sign w-6 h-6">
+                        <line x1="12" x2="12" y1="2" y2="22"></line>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg></div>
+                <div>
+                    <p class="text-sm text-muted-foreground">Total Earnings</p>
+                    <p class="font-display text-2xl font-bold"><span
+                            class="mr-1">{{currencyService.currentCurrency().symbol}}</span>{{
+                        currencyService.convert(stats()?.totalEarnings || 0) | number:'1.2-2' }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div
+            class="rounded-lg border text-card-foreground shadow-sm bg-card border-border animate-fade-in-up animate-delay-300 hover-lift">
+            <div class="p-6 flex items-center gap-4">
+                <div
+                    class="w-12 h-12 rounded-lg bg-gradient-to-br from-emerald-400 via-green-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/30">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="lucide lucide-wallet w-6 h-6">
+                        <path
+                            d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1">
+                        </path>
+                        <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"></path>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-sm text-muted-foreground">Referral Balance</p>
+                    <p class="font-display text-2xl font-bold"><span
+                            class="mr-1">{{currencyService.currentCurrency().symbol}}</span>{{
+                        currencyService.convert(stats()?.referralBalance || 0) | number:'1.2-2' }}</p>
+                </div>
+            </div>
+        </div>
+        <div
+            class="rounded-lg border text-card-foreground shadow-sm bg-card border-border animate-fade-in-up animate-delay-400 hover-lift">
+            <div class="p-6 flex items-center gap-4">
+                <div class="w-12 h-12 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-500"><svg
+                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="lucide lucide-gift w-6 h-6">
+                        <rect x="3" y="8" width="18" height="4" rx="1"></rect>
+                        <path d="M12 8v13"></path>
+                        <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"></path>
+                        <path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"></path>
+                    </svg></div>
+                <div>
+                    <p class="text-sm text-muted-foreground">Commission Rate</p>
+                    <p class="font-display text-2xl font-bold">{{ stats()?.commissionRate || 5 }}%</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div
+        class="rounded-lg border text-card-foreground shadow-sm bg-card border-border animate-fade-in-up animate-delay-500">
+        <div class="flex flex-col space-y-1.5 p-6">
+            <h3 class="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2"><svg
+                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-tag w-5 h-5">
+                    <path
+                        d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z">
+                    </path>
+                    <circle cx="7.5" cy="7.5" r=".5" fill="currentColor"></circle>
+                </svg>Have a Referral Code?</h3>
+            <p class="text-sm text-muted-foreground">Enter a friend's referral code to link your account</p>
+        </div>
+        <div class="p-6 pt-0 space-y-4">
+            <div class="flex gap-2"><input [ngModel]="customCodeInput()" (ngModelChange)="customCodeInput.set($event)"
+                    class="flex h-10 w-full rounded-md border border-input px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm bg-secondary/50 font-mono uppercase"
+                    placeholder="Enter referral code" maxlength="20"><button (click)="applyCode()"
+                    [disabled]="isApplying()"
+                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+                    <span *ngIf="isApplying()"
+                        class="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground"></span>
+                    <span *ngIf="!isApplying()">Apply</span></button></div>
+            <p class="text-sm text-muted-foreground">You can only use a referral code once, and it can't be changed
+                after applying.</p>
+        </div>
+    </div>
+    <div
+        class="rounded-lg border text-card-foreground shadow-sm bg-card border-border animate-fade-in-up animate-delay-600 hover-lift">
+        <div class="flex flex-col space-y-1.5 p-6">
+            <h3 class="text-2xl font-semibold leading-none tracking-tight">Your Referral Link</h3>
+            <p class="text-sm text-muted-foreground">Share this link with friends. When they place orders, you earn {{
+                stats()?.commissionRate || 5 }}%
+                commission!</p>
+        </div>
+        <div class="p-6 pt-0 space-y-4">
+            <div class="flex gap-2"><input
+                    class="flex h-10 w-full rounded-md border border-input px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm bg-secondary/50 font-mono text-sm"
+                    readonly=""
+                    [value]="(stats()?.referralCode) ? 'https://SmmStable.com/signup?referralCode=' + stats()?.referralCode : ''"><button
+                    (click)="copyLink()"
+                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"><svg
+                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="lucide lucide-copy w-4 h-4">
+                        <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
+                        <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
+                    </svg></button></div>
+            <div class="flex items-center gap-2 text-sm text-muted-foreground"><span>Your referral code:</span><code
+                    class="bg-secondary px-2 py-1 rounded font-mono font-bold">{{ stats()?.referralCode || 'N/A' }}</code>
+            </div>
+        </div>
+    </div>
+    <div
+        class="rounded-lg border text-card-foreground shadow-sm bg-card border-border animate-fade-in-up animate-delay-700">
+        <div class="flex flex-col space-y-1.5 p-6">
+            <h3 class="text-2xl font-semibold leading-none tracking-tight">How It Works</h3>
+        </div>
+        <div class="p-6 pt-0">
+            <div class="grid md:grid-cols-4 gap-6">
+                <div class="text-center animate-scale-in animate-delay-800">
+                    <div
+                        class="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center mx-auto mb-4 font-display font-bold text-xl">
+                        1</div>
+                    <h3 class="font-semibold mb-2">Share Your Link</h3>
+                    <p class="text-sm text-muted-foreground">Send your unique referral link to friends</p>
+                </div>
+                <div class="text-center animate-scale-in animate-delay-850">
+                    <div
+                        class="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center mx-auto mb-4 font-display font-bold text-xl">
+                        2</div>
+                    <h3 class="font-semibold mb-2">Friend Signs Up</h3>
+                    <p class="text-sm text-muted-foreground">They create an account using your link</p>
+                </div>
+                <div class="text-center animate-scale-in animate-delay-900">
+                    <div
+                        class="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center mx-auto mb-4 font-display font-bold text-xl">
+                        3</div>
+                    <h3 class="font-semibold mb-2">They Order</h3>
+                    <p class="text-sm text-muted-foreground">When they place orders, you earn commission</p>
+                </div>
+                <div class="text-center animate-scale-in animate-delay-950">
+                    <div
+                        class="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center mx-auto mb-4 font-display font-bold text-xl">
+                        4</div>
+                    <h3 class="font-semibold mb-2">Request Payout</h3>
+                    <p class="text-sm text-muted-foreground">Once you reach $5, request a payout via ticket</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div
+        class="rounded-lg border text-card-foreground shadow-sm bg-card border-border animate-fade-in-up animate-delay-1000">
+        <div class="flex flex-col space-y-1.5 p-6">
+            <h3 class="text-2xl font-semibold leading-none tracking-tight">Referral Rules</h3>
+        </div>
+        <div class="p-6 pt-0">
+            <ul class="space-y-2 text-sm text-muted-foreground">
+                <li class="flex items-start gap-2"><span class="text-primary">•</span>Earn {{ stats()?.commissionRate ||
+                    5 }}% commission on every
+                    completed order from referred users</li>
+                <li class="flex items-start gap-2"><span class="text-primary">•</span>Referral earnings are added to a
+                    separate referral balance</li>
+                <li class="flex items-start gap-2"><span class="text-primary">•</span>Minimum $5 required to request a
+                    payout</li>
+                <li class="flex items-start gap-2"><span class="text-primary">•</span>To receive payout, submit a
+                    request and an admin will process it</li>
+                <li class="flex items-start gap-2"><span class="text-primary">•</span>No commission for cancelled,
+                    failed, or refunded orders</li>
+                <li class="flex items-start gap-2"><span class="text-primary">•</span>Self-referrals are not allowed
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

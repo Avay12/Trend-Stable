@@ -1,0 +1,226 @@
+@if (isLoading()) {
+<div class="flex justify-center items-center py-20 min-h-[60vh]">
+  <div class="flex flex-col items-center gap-4">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      class="lucide lucide-loader-2 animate-spin text-primary">
+      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+    </svg>
+    <p class="text-sm text-muted-foreground animate-pulse">Loading orders...</p>
+  </div>
+</div>
+} @else {
+<div class="space-y-6">
+
+  <!-- Header -->
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div>
+      <h1 class="text-2xl md:text-3xl font-bold">Orders Management</h1>
+      <p class="text-muted-foreground">Manage and track all orders</p>
+    </div>
+
+    <!-- Export Buttons -->
+    <div class="flex gap-2">
+      <button (click)="exportToPDF()"
+        class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-input bg-background hover:bg-accent transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+        </svg>
+        <span class="hidden sm:inline">Export PDF</span>
+      </button>
+      <button (click)="exportToExcel()"
+        class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+        </svg>
+        <span class="hidden sm:inline">Export Excel</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="flex flex-col md:flex-row gap-4">
+    <div class="flex-1">
+      <input type="text" [(ngModel)]="searchTerm" placeholder="Search orders..." (keyup.enter)="onSearch()"
+        (input)="onSearch()" class="w-full px-4 py-2 rounded-lg border border-input bg-background">
+    </div>
+    <select title="Status" [(ngModel)]="selectedStatus" class="px-4 py-2 rounded-lg border border-input bg-background"
+      (change)="loadUsers()">
+      <option value="">All Status</option>
+      <option value="PENDING">Pending</option>
+      <option value="IN_PROGRESS">Processing</option>
+      <option value="COMPLETED">Completed</option>
+      <option value="CANCELLED">Cancelled</option>
+    </select>
+  </div>
+
+  <!-- Table -->
+  <div class="rounded-lg border border-border bg-card overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead class="bg-muted/50 border-b border-border">
+          <tr>
+            <th class="px-4 py-3 text-left text-sm font-semibold">ID</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold">User</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold md:block">Service</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold">Provider</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold">Quantity</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold">Charge</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold">Status</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold">Link</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold md:block">Date</th>
+            <th class="px-4 py-3 text-right text-sm font-semibold">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border">
+          @for (order of orders(); track order.id) {
+          <tr class="hover:bg-muted/30 transition-colors">
+            <td class="px-4 py-3 md:table-cell text-sm text-muted-foreground">{{ order.serviceId }}</td>
+            <td class="px-4 py-3 md:table-cell text-sm text-muted-foreground">{{ order.username }}</td>
+            <td class="px-4 py-3 text-sm md:block">{{ order.service }}</td>
+            <td class="px-4 py-3 text-sm">{{ order.provider }}</td>
+            <td class="px-4 py-3 font-semibold">{{ order.quantity.toString() }}</td>
+            <td class="px-4 py-3 font-semibold">
+              {{ currencyService.currentCurrency().symbol }}{{ currencyService.convert(order.charge) | number:'1.2-2' }}
+            </td>
+            <td class="px-4 py-3">
+              <span class="inline-flex px-2 py-1 rounded-full text-xs font-semibold" [ngClass]="order.status === 'COMPLETED' ? 'bg-green-500/10 text-green-500' :
+                   order.status === 'PENDING' ? 'bg-yellow-500/10 text-yellow-500' :
+                   order.status === 'IN_PROGRESS' ? 'bg-blue-500/10 text-blue-500' :
+                   'bg-red-500/10 text-red-500'">
+                {{ order.status }}
+              </span>
+            </td>
+            <td class="px-4 py-3 lg:table-cell text-sm">
+              <a href="{{ order.link }}" target="_blank" class="text-primary hover:underline">
+                {{ order.link }}
+              </a>
+            </td>
+            <td class="px-4 py-3 xl:table-cell text-sm text-muted-foreground md:block">{{ order.createdAt | date:
+              'medium'
+              }}
+            </td>
+            <td class="px-4 py-3 text-right">
+              <button (click)="openEditModal(order)"
+                class="inline-flex items-center gap-1 px-3 py-1 rounded-md text-sm bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path>
+                </svg>
+                <span class="hidden sm:inline">Edit</span>
+              </button>
+            </td>
+          </tr>
+          } @empty {
+          <tr>
+            <td colspan="8" class="px-4 py-8 text-center text-muted-foreground">
+              No orders found
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+  </div>
+</div>
+}
+
+
+<!-- Edit Modal -->
+@if (showEditModal()) {
+<div data-state="open"
+  class="fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
+  style="pointer-events: auto;" data-aria-hidden="true" aria-hidden="true"></div>
+<div class="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/50" (click)="closeEditModal()">
+  <div class="bg-card rounded-lg shadow-xl max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto"
+    (click)="$event.stopPropagation()">
+    <!-- Modal Header -->
+    <div class="p-4 sm:p-6 border-b border-border flex items-center justify-between gap-3">
+      <h2 class="text-lg sm:text-xl md:text-2xl font-bold">Edit Order</h2>
+      <button (click)="closeEditModal()"
+        class="flex items-center justify-center w-8 h-8 rounded-md hover:bg-accent transition-colors flex-shrink-0"
+        aria-label="Close modal">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 6 6 18"></path>
+          <path d="m6 6 12 12"></path>
+        </svg>
+      </button>
+    </div>
+    <!-- Modal Body -->
+    <form [formGroup]="orderForm" (ngSubmit)="updateOrderStatus()">
+      <div class="p-4 sm:p-6 space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+          <div>
+            <label class="block text-sm font-medium mb-1.5 sm:mb-2">Order ID</label>
+            <input title="Order ID" type="text" formControlName="id"
+              class="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-base rounded-lg border border-input bg-background"
+              readonly>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1.5 sm:mb-2">User</label>
+            <input title="User" type="text" formControlName="user"
+              class="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-base rounded-lg border border-input bg-background"
+              readonly>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1.5 sm:mb-2">Service</label>
+            <input title="Service" type="text" formControlName="service"
+              class="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-base rounded-lg border border-input bg-background"
+              readonly>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1.5 sm:mb-2">Quantity</label>
+            <input title="Quantity" type="number" formControlName="quantity"
+              class="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-base rounded-lg border border-input bg-background"
+              readonly>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1.5 sm:mb-2">Charge ($)</label>
+            <input title="Charge" type="number" step="0.01" formControlName="charge"
+              class="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-base rounded-lg border border-input bg-background"
+              readonly>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1.5 sm:mb-2">Status</label>
+            <select title="Status" formControlName="status"
+              class="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-base rounded-lg border border-input bg-background">
+              <option value="PENDING">PENDING</option>
+              <option value="COMPLETED">COMPLETED</option>
+              <option value="CANCELLED">CANCELLED</option>
+              <option value="IN_PROGRESS">IN_PROGRESS</option>
+              <option value="PARTIAL">PARTIAL</option>
+              <option value="REFILLED">REFILLED</option>
+              <option value="FAILED">FAILED</option>
+              <option value="REFUNDED">REFUNDED</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1.5 sm:mb-2">Link</label>
+            <input title="Link" type="text" formControlName="link" readonly
+              class="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-base rounded-lg border border-input bg-background">
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-4 sm:p-6 border-t border-border flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3">
+        <button (click)="closeEditModal()"
+          class="w-full sm:w-auto px-4 py-2.5 sm:py-2 rounded-lg border border-input hover:bg-accent transition-colors text-sm sm:text-base font-medium">
+          Cancel
+        </button>
+        <button type="submit"
+          class="w-full sm:w-auto px-4 py-2.5 sm:py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-sm sm:text-base font-medium">
+          Save Changes
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+}

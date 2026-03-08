@@ -1,0 +1,233 @@
+@if (isLoading()) {
+<div class="flex justify-center items-center py-20 min-h-[60vh]">
+  <div class="flex flex-col items-center gap-4">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      class="lucide lucide-loader-2 animate-spin text-primary">
+      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+    </svg>
+    <p class="text-sm text-muted-foreground animate-pulse">Loading users...</p>
+  </div>
+</div>
+} @else {
+<div class="space-y-6">
+
+  <!-- Header -->
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div>
+      <h1 class="text-2xl md:text-3xl font-bold">Users Management</h1>
+      <p class="text-muted-foreground">Manage platform users and permissions</p>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex gap-2">
+      <button (click)="exportToPDF()"
+        class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-input bg-background hover:bg-accent transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+        </svg>
+        <span class="hidden sm:inline">PDF</span>
+      </button>
+      <button (click)="exportToExcel()"
+        class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-input bg-background hover:bg-accent transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+        </svg>
+        <span class="hidden sm:inline">Excel</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="flex flex-col md:flex-row gap-4">
+    <div class="flex-1">
+      <input type="text" placeholder="Search users..." [(ngModel)]="searchTerm" (keyup.enter)="onSearch()"
+        (input)="onSearch()" class="w-full px-4 py-2 rounded-lg border border-input bg-background">
+    </div>
+    <select title="Select user role" class="px-4 py-2 rounded-lg border border-input bg-background"
+      [(ngModel)]="selectedRole" (change)="loadUsers()">
+      <option value="">All Roles</option>
+      <option value="USER">User</option>
+      <option value="ADMIN">Admin</option>
+    </select>
+  </div>
+
+  <!-- Table -->
+  <div class="rounded-lg border border-border bg-card overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead class="bg-muted/50 border-b border-border">
+          <tr>
+            <th class="px-4 py-3 text-left text-sm font-semibold">Username</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold">Currency</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold">Balance</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold">Loyalty</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold">Role</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold">Status</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold hidden md:block">Joined</th>
+            <th class="px-4 py-3 text-right text-sm font-semibold">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border">
+          @for (user of users(); track user.id) {
+          <tr class="hover:bg-muted/30 transition-colors">
+            <td class="px-4 py-3 font-medium">{{ user.username }}</td>
+            <td class="px-4 py-3 text-sm text-muted-foreground">{{ user.currency || 'USD' }}</td>
+            <td class="px-4 py-3 font-semibold">
+              {{ currencyService.getCurrency(user.currency || 'USD').symbol }}
+              {{ currencyService.convertTo(user.balance, user.currency || 'USD') | number:'1.2-2' }}
+            </td>
+            <td class="px-4 py-3 font-semibold">{{ user.loyalty }}</td>
+            <td class="px-4 py-3">
+              <span class="inline-flex px-2 py-1 rounded-full text-xs font-semibold"
+                [ngClass]="user.role === 'ADMIN' ? 'bg-purple-500/10 text-purple-500' : 'bg-blue-500/10 text-blue-500'">
+                {{ user.role }}
+              </span>
+            </td>
+            <td class="px-4 py-3">
+              <span class="inline-flex px-2 py-1 rounded-full text-xs font-semibold"
+                [ngClass]="user.status ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'">
+                {{ user.status ? 'Active' : 'Inactive' }}
+              </span>
+            </td>
+            <td class="px-4 py-3 xl:table-cell text-sm text-muted-foreground hidden md:block">{{ user.createdAt |
+              date:'medium' }}</td>
+            <td class="px-4 py-3 text-right">
+              <button (click)="openEditModal(user)"
+                class="inline-flex items-center gap-1 px-3 py-1 rounded-md text-sm bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path>
+                </svg>
+                <span class="hidden sm:inline">Edit</span>
+              </button>
+              <button (click)="deleteUser(user.id)"
+                class="inline-flex items-center gap-1 px-3 py-1 rounded-md text-sm bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors ml-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 6h18"></path>
+                  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                  <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                </svg>
+                <span class="hidden sm:inline">Delete</span>
+              </button>
+            </td>
+          </tr>
+          } @empty {
+          <tr>
+            <td colspan="8" class="px-4 py-8 text-center text-muted-foreground">
+              No users found
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+}
+
+
+<!-- Edit Modal -->
+@if (showEditModal()) {
+<div data-state="open"
+  class="fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
+  style="pointer-events: auto;" data-aria-hidden="true" aria-hidden="true"></div>
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" (click)="closeEditModal()">
+  <div class="bg-card rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+    (click)="$event.stopPropagation()">
+    <div class="p-6 border-b border-border">
+      <h2 class="text-2xl font-bold">Edit User</h2>
+      <p class="text-sm text-muted-foreground mt-1">Editing {{ userForm.get('username')?.value }}</p>
+
+    </div>
+
+    <form [formGroup]="userForm" (ngSubmit)="saveUser()">
+      <div class="p-6 space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium mb-2">Username *</label>
+            <input type="text" formControlName="username"
+              class="w-full px-4 py-2 rounded-lg border border-input bg-background" placeholder="Enter username">
+            @if (userForm.get('username')?.invalid && userForm.get('username')?.touched) {
+            <p class="text-sm text-red-500 mt-1">Username is required</p>
+            }
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-2">Email *</label>
+            <input type="email" formControlName="email"
+              class="w-full px-4 py-2 rounded-lg border border-input bg-background" placeholder="user@example.com">
+            @if (userForm.get('email')?.invalid && userForm.get('email')?.touched) {
+            <p class="text-sm text-red-500 mt-1">
+              {{ userForm.get('email')?.errors?.['required'] ? 'Email is required' : 'Please enter a valid
+              email' }}
+            </p>
+            }
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-2">Currency</label>
+            <select title="Select currency" formControlName="currency"
+              class="w-full px-4 py-2 rounded-lg border border-input bg-background">
+              @for (currency of availableCurrencies; track currency.code) {
+              <option [value]="currency.code">{{ currency.code }} ({{ currency.symbol }})</option>
+              }
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-2">Balance ({{ userForm.get('currency')?.value || 'USD' }})
+              *</label>
+            <input type="number" step="0.01" formControlName="balance"
+              class="w-full px-4 py-2 rounded-lg border border-input bg-background" placeholder="0.00">
+            @if (userForm.get('balance')?.invalid && userForm.get('balance')?.touched) {
+            <p class="text-sm text-red-500 mt-1">
+              {{ userForm.get('balance')?.errors?.['required'] ? 'Balance is required' : 'Balance must be
+              0 or greater' }}
+            </p>
+            }
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-2">Role *</label>
+            <select title="Select user role" formControlName="role" [value]="userForm.get('role')?.value"
+              class="w-full px-4 py-2 rounded-lg border border-input bg-background">
+              <option value="USER">User</option>
+              <option value="ADMIN">Admin</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-2">Loyalty *</label>
+            <select title="Select user loyalty" formControlName="loyalty" [value]="userForm.get('loyalty')?.value"
+              class="w-full px-4 py-2 rounded-lg border border-input bg-background">
+              <option value="silver">Silver</option>
+              <option value="gold">Gold</option>
+              <option value="platinum">Platinum</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-2">Status *</label>
+            <select title="Select user status" formControlName="isActive" [value]="userForm.get('isActive')?.value"
+              class="w-full px-4 py-2 rounded-lg border border-input bg-background">
+              <option [value]="true">Active</option>
+              <option [value]="false">Inactive</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-6 border-t border-border flex justify-end gap-3">
+        <button type="button" (click)="closeEditModal()"
+          class="px-4 py-2 rounded-lg border border-input hover:bg-accent transition-colors">
+          Cancel
+        </button>
+        <button type="submit" [disabled]="userForm.invalid"
+          class="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+          Save Changes
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+}
