@@ -9,7 +9,7 @@ import { Order, Orders, OrderStats, UsersOrder } from '../../shared/models/order
 })
 export class OrderService {
   // url = 'http://localhost:3001/api/orders';
-  url = 'https://smmstable.com/api/orders';
+  url = 'https://trendstable.com/api/orders';
   private http = inject(HttpClient);
   orders = signal<Orders | null>(null);
 

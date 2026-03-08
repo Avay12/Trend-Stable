@@ -9,7 +9,7 @@ import { tap } from 'rxjs/operators';
 export class NotificationService {
   private http = inject(HttpClient);
   // private apiUrl = environment.apiUrl + '/notifications'; // Assuming environment file exists, else fallback
-  private apiUrl = 'https://smmstable.com/api/notifications';
+  private apiUrl = 'https://trendstable.com/api/notifications';
   // private apiUrl = 'http://localhost:3001/api/notifications';
 
   // State

@@ -19,7 +19,7 @@ export interface ApplyReferralResponse {
   providedIn: 'root'
 })
 export class ReferralService {
-  private url = 'https://smmstable.com/api';
+  private url = 'https://trendstable.com/api';
   private http = inject(HttpClient);
 
   getStats(): Observable<ReferralStats> {

@@ -23,7 +23,7 @@ export interface Headline {
   providedIn: 'root'
 })
 export class PromotionsService {
-  private url = 'https://smmstable.com/api';
+  private url = 'https://trendstable.com/api';
   private http = inject(HttpClient);
 
   // Promocode Methods

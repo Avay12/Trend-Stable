@@ -11,7 +11,7 @@ export interface PaymentInitiateResponse {
   providedIn: 'root'
 })
 export class PaymentService {
-  private url = 'https://smmstable.com/api';
+  private url = 'https://trendstable.com/api';
   private http = inject(HttpClient);
 
    initiatePayment(amount: number, mobile: string, promoCode?: string): Observable<PaymentInitiateResponse> {

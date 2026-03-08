@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class AdminService {
   private http = inject(HttpClient);
-  private apiUrl = 'https://smmstable.com/api/admin';
+  private apiUrl = 'https://trendstable.com/api/admin';
 
   getMarginConfig(startDate?: string, endDate?: string): Observable<any> {
     let params = new HttpParams();

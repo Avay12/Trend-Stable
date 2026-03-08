@@ -25,7 +25,7 @@ interface User {
 export class AuthService {
   private router = inject(Router); // Replace with your actual API URL
   // private apiUrl = 'http://localhost:3001/api/auth';
-  private apiUrl = 'https://smmstable.com/api/auth';
+  private apiUrl = 'https://trendstable.com/api/auth';
   currentUser = signal<User | null>(null);
   isLoggedIn = signal(false);
   authChecked = signal(false);
@@ -82,7 +82,7 @@ export class AuthService {
   }
 
   loginWithGoogle(ref?: string | null) {
-    let url = 'https://smmstable.com/api/oauth/google';
+    let url = 'https://trendstable.com/api/oauth/google';
     if (ref) {
       url += `?ref=${ref}`;
     }

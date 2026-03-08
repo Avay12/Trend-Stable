@@ -15,7 +15,7 @@ import { AuthService } from './auth.service';
 })
 export class AccountOrderService {
   // url = 'http://localhost:3001/api/orders';
-  url = 'https://smmstable.com/api/orders';
+  url = 'https://trendstable.com/api/orders';
   private http = inject(HttpClient);
   private authService = inject(AuthService);
   orders = signal<Orders | null>(null);

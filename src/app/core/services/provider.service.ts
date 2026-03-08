@@ -8,7 +8,7 @@ import { Services } from '../../shared/models/services.model';
 })
 export class ProviderServices {
   // url = 'http://localhost:3001/api/services';
-  url = 'https://smmstable.com/api/services';
+  url = 'https://trendstable.com/api/services';
   private http = inject(HttpClient);
   services = signal<Services | null>(null);
   appRange = signal<number>(1.8);
@@ -27,7 +27,7 @@ export class ProviderServices {
   }
 
   getAppRange() {
-    return this.http.get<any>('https://smmstable.com/api/range', {
+    return this.http.get<any>('https://trendstable.com/api/range', {
       withCredentials: true,
     });
   }
