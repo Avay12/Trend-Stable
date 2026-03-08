@@ -170,10 +170,10 @@ export class Services implements OnInit {
         // Name replacement logic
         services.data.forEach(service => {
           service.name = service.name
-            .replace(/MTP/gi, 'Smmstable')
-            .replace(/morethansmm/gi, 'Smmstable')
-            .replace(/More\s*Than\s*Panel/gi, 'Smmstable')
-            .replace(/More\s*Than/gi, 'Smmstable');
+            .replace(/MTP/gi, 'TrendStable')
+            .replace(/morethansmm/gi, 'TrendStable')
+            .replace(/More\s*Than\s*Panel/gi, 'TrendStable')
+            .replace(/More\s*Than/gi, 'TrendStable');
         });
 
         // Client-side filtering fallback (if backend filtering is insufficient or effectively "all")

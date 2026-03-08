@@ -12,7 +12,7 @@ import { filter } from 'rxjs';
 export class App {
   private router = inject(Router);
   busyService = inject(BusyService);
-  protected readonly title = signal('SmmStable');
+  protected readonly title = signal('TrendStable');
 
   ngOnInit(): void {
     // 1. Load the script once on app initialization

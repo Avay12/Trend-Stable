@@ -76,7 +76,7 @@ export class Referrals implements OnInit {
   copyLink() {
     const code = this.stats()?.referralCode;
     if (code) {
-      const link = `https://SmmStable.com/signup?ref=${code}`;
+      const link = `https://trendstable.com/signup?ref=${code}`;
       navigator.clipboard.writeText(link).then(() => {
         this.toastr.success('Referral link copied to clipboard');
       }).catch(() => {

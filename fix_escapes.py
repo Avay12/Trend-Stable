@@ -1,7 +1,7 @@
 import re
 
 # Read the file
-with open(r'd:\SocialAsset\SmmStable\SmmStable\src\app\features\user-dashboard\services\services.html', 'r', encoding='utf-8') as f:
+with open(r'd:\SocialAsset\TrendStable\TrendStable\src\app\features\user-dashboard\services\services.html', 'r', encoding='utf-8') as f:
     lines = f.readlines()
 
 # Fix lines 37122-37128 (0-indexed: 37121-37127)
@@ -15,7 +15,7 @@ if len(lines) > 37128:
             del lines[37122]
 
 # Write back
-with open(r'd:\SocialAsset\SmmStable\SmmStable\src\app\features\user-dashboard\services\services.html', 'w', encoding='utf-8') as f:
+with open(r'd:\SocialAsset\TrendStable\TrendStable\src\app\features\user-dashboard\services\services.html', 'w', encoding='utf-8') as f:
     f.writelines(lines)
 
 print("Fixed the Telegram service line")

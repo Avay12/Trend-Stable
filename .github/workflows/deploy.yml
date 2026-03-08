@@ -38,8 +38,8 @@ jobs:
 
       - name: Verify local build
         run: |
-          ls -la dist/SmmStable/browser/
-          [ -f dist/SmmStable/browser/index.html ] || (echo "index.html missing in build!" && exit 1)
+          ls -la dist/TrendStable/browser/
+          [ -f dist/TrendStable/browser/index.html ] || (echo "index.html missing in build!" && exit 1)
 
       - name: Backup current app on VPS
         uses: appleboy/ssh-action@v1.0.3
@@ -78,7 +78,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "dist/SmmStable/browser/*"
+          source: "dist/TrendStable/browser/*"
           target: "/var/www/trendstable"
           strip_components: 3
           overwrite: true

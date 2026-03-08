@@ -15,7 +15,7 @@ import { Footer } from './footer/footer';
   encapsulation: ViewEncapsulation.ShadowDom
 })
 export class LandingPage implements AfterViewInit {
-  title = 'SmmStable - Grow Your Social Media Fast & Safely';
+  title = 'TrendStable - Grow Your Social Media Fast & Safely';
 
   constructor(private el: ElementRef) {}
 

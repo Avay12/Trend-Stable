@@ -55,8 +55,8 @@ export class CheapOrderService {
   // Computed: Unique categories from the fetched services
   uniqueFormCategories = computed(() => {
     const services = this.providerService.services()?.data || [];
-    // Replace "More Than Panel" with "SmmStable" in category names
-    const categories = new Set(services.map(s => s.category.replace(/(More\s*Than\s*Panel|More\s*Than|MTP)/gi, 'SmmStable')));
+    // Replace "More Than Panel" with "TrendStable" in category names
+    const categories = new Set(services.map(s => s.category.replace(/(More\s*Than\s*Panel|More\s*Than|MTP)/gi, 'TrendStable')));
     
     return Array.from(categories).sort((a, b) => {
       const aTrimmed = a.trim();
@@ -72,10 +72,10 @@ export class CheapOrderService {
       if (!aIsText && bIsText) return 1;
 
       // 2. Secondary Sort: Platform Tier Priority
-      // SmmStable > TikTok > Facebook > Instagram > Others
+      // TrendStable > TikTok > Facebook > Instagram > Others
       const getTier = (str: string) => {
         const lower = str.toLowerCase();
-        if (lower.includes('smmstable')) return 0;
+        if (lower.includes('trendstable')) return 0;
         if (lower.includes('tiktok')) return 1;
         if (lower.includes('facebook')) return 2;
         if (lower.includes('instagram')) return 3;
@@ -113,7 +113,7 @@ export class CheapOrderService {
     const category = this.formSelectedCategory();
     
     if (category) {
-      services = services.filter(s => s.category.replace(/(More\s*Than\s*Panel|More\s*Than|MTP)/gi, 'SmmStable') === category);
+      services = services.filter(s => s.category.replace(/(More\s*Than\s*Panel|More\s*Than|MTP)/gi, 'TrendStable') === category);
     }
     
     // Sort to prioritize TikTok services
@@ -511,7 +511,7 @@ export class CheapOrderService {
       
       if (foundService) {
         // If found, switch category first, then select service
-        this.formSelectedCategory.set(foundService.category.replace(/(More\s*Than\s*Panel|More\s*Than|MTP)/gi, 'SmmStable'));
+        this.formSelectedCategory.set(foundService.category.replace(/(More\s*Than\s*Panel|More\s*Than|MTP)/gi, 'TrendStable'));
         
         // Use setTimeout to ensure category change propagates before setting service
         setTimeout(() => {

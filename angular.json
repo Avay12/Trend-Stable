@@ -6,7 +6,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "SmmStable": {
+    "TrendStable": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -54,10 +54,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "SmmStable:build:production"
+              "buildTarget": "TrendStable:build:production"
             },
             "development": {
-              "buildTarget": "SmmStable:build:development"
+              "buildTarget": "TrendStable:build:development"
             }
           },
           "defaultConfiguration": "development"
