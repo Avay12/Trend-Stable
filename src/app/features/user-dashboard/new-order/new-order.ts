@@ -38,7 +38,7 @@ export class NewOrder {
   
   // UI State
   activeCategory = signal<string>('everything');
-  orderType = signal<'new' | 'favorites'>('new');
+  orderType = signal<'cheap' | 'favorites' | 'vip'>('cheap');
   isLoadingServices = signal(true);
   selectedCategory = 'All Platforms';
   isCategoryDropdownOpen = signal(false);
@@ -53,15 +53,57 @@ export class NewOrder {
   link = signal<string>('');
   quantity = signal<number | null>(null);
 
+  // Computed: Available services based on order type
+  availableServices = computed(() => {
+    const services = this.providerService.services()?.data || [];
+    if (this.orderType() === 'favorites') {
+      return services.filter((s: any) => (s.providerDetails || '').toLowerCase().includes('caspersmm'));
+    }
+    if (this.orderType() === 'vip') {
+      return services.filter((s: any) => {
+        const p = (s.providerDetails || '').toLowerCase();
+        return p.includes('morethanpannel') || p.includes('morethanpanel');
+      });
+    }
+    if (this.orderType() === 'cheap') {
+      return services.filter((s: any) => (s.providerDetails || '').toLowerCase().includes
+    ('smmbind'));
+    }
+    return services;
+  });
   // Computed: Unique categories from the fetched services
   uniqueFormCategories = computed(() => {
-    const services = this.providerService.services()?.data || [];
-    // Replace "More Than Panel" with "TrendStable" in category names
-    const categories = new Set(services.map(s => s.category.replace(/(More\s*Than\s*Panel|More\s*Than|MTP)/gi, 'TrendStable')));
+    const services = this.availableServices();
+    const categoryTiers = new Map<string, number>();
+
+    const getProviderTier = (provider: string) => {
+      const p = (provider || '').toLowerCase();
+      if (p.includes('smmbind')) return 0;
+      if (p.includes('morethanpannel') || p.includes('morethanpanel')) return 1;
+      if (p.includes('caspersmm')) return 2;
+      return 3;
+    };
+    
+    // Replace "More Than Panel" with "SmmStable" in category names
+    const categories = new Set(services.map(s => {
+      const catName = s.category.replace(/(More\s*Than\s*Panel|More\s*Than|MTP)/gi, 'SmmStable');
+      const tier = getProviderTier(s.providerDetails);
+      if (!categoryTiers.has(catName) || tier < categoryTiers.get(catName)!) {
+        categoryTiers.set(catName, tier);
+      }
+      return catName;
+    }));
     
     return Array.from(categories).sort((a, b) => {
       const aTrimmed = a.trim();
       const bTrimmed = b.trim();
+
+      // 0. Provider Sort: Priority for specific providers
+      // smmbind > morethanpannel > caspersmm > others
+      const pTierA = categoryTiers.get(a) ?? 3;
+      const pTierB = categoryTiers.get(b) ?? 3;
+
+      if (pTierA !== pTierB) return pTierA - pTierB;
       
       // 1. Primary Sort: Text (No Icon) vs Icon (Emoji/Symbol)
       // Strictly check if starts with alphanumeric char (A-Z, 0-9)
@@ -73,13 +115,13 @@ export class NewOrder {
       if (!aIsText && bIsText) return 1;
 
       // 2. Secondary Sort: Platform Tier Priority
-      // TrendStable > TikTok > Facebook > Instagram > Others
+      // SmmStable > TikTok > Facebook > Instagram > Others
       const getTier = (str: string) => {
         const lower = str.toLowerCase();
-        if (lower.includes('trendstable')) return 0;
-        if (lower.includes('tiktok')) return 1;
-        if (lower.includes('facebook')) return 2;
-        if (lower.includes('instagram')) return 3;
+        if (lower.includes('tiktok')) return 0;
+        if (lower.includes('facebook')) return 1;
+        if (lower.includes('instagram')) return 2;
+        if (lower.includes('smmstable')) return 3;
         return 4;
       };
       
@@ -110,11 +152,11 @@ export class NewOrder {
 
   // Computed: Filter services based on form selected category
   filteredServices = computed(() => {
-    let services = this.providerService.services()?.data || [];
+    let services = this.availableServices();
     const category = this.formSelectedCategory();
     
     if (category) {
-      services = services.filter(s => s.category.replace(/(More\s*Than\s*Panel|More\s*Than|MTP)/gi, 'TrendStable') === category);
+      services = services.filter(s => s.category.replace(/(More\s*Than\s*Panel|More\s*Than|MTP)/gi, 'SmmStable') === category);
     }
     
     // Sort to prioritize TikTok services
@@ -131,7 +173,7 @@ export class NewOrder {
   selectedService = computed(() => {
     const id = this.selectedServiceId();
     if (!id) return undefined;
-    return this.providerService.services()?.data.find(s => s.service == id);
+    return this.filteredServices().find(s => s.service == id);
   });
 
 
@@ -179,9 +221,27 @@ export class NewOrder {
   // Store all services separately for counting
   allServices = signal<any[]>([]);
 
+  // Computed: Available all services based on order type
+  availableAllServices = computed(() => {
+    const services = this.allServices();
+    if (this.orderType() === 'favorites') {
+      return services.filter((s: any) => (s.providerDetails || '').toLowerCase().includes('smmbind'));
+    }
+    if (this.orderType() === 'vip') {
+      return services.filter((s: any) => {
+        const p = (s.providerDetails || '').toLowerCase();
+        return p.includes('morethanpannel') || p.includes('morethanpanel');
+      });
+    }
+    if (this.orderType() === 'cheap') {
+      return services.filter((s: any) => (s.providerDetails || '').toLowerCase().includes('caspersmm'));
+    }
+    return services;
+  });
+
   // Computed: Get counts for each category
   categoryCounts = computed(() => {
-    const services = this.allServices();
+    const services = this.availableAllServices();
     const counts: Record<string, number> = {};
     
     // Initialize with 0
@@ -235,7 +295,6 @@ export class NewOrder {
     
     this.providerService.getServices(platform).subscribe({
       next: (services) => {
-        console.log(services);
         this.providerService.services.set(services);
         
         // If we fetched everything, update allServices for counting
@@ -281,8 +340,9 @@ export class NewOrder {
     });
   }
 
-  setOrderType(type: 'new' | 'favorites') {
+  setOrderType(type: 'cheap' | 'favorites' | 'vip') {
     this.orderType.set(type);
+    this.formSelectedCategory.set(''); // Reset form category to avoid matching a category that doesn't exist in favorites
   }
 
   toggleCategoryDropdown() {
@@ -428,6 +488,7 @@ export class NewOrder {
         serviceId: this.selectedService()!.service,
         quantity: this.quantity()!,
         link: this.link(),
+        provider: this.selectedService()!.providerDetails,
       })
       .subscribe({
         next: (order) => {
@@ -492,6 +553,7 @@ export class NewOrder {
       min: Number(service.min),
       max: Number(service.max),
       quantity: qty,
+      provider: service.providerDetails,
     });
     
     this.toastrService.success('Added to cart');
@@ -506,12 +568,12 @@ export class NewOrder {
     // Check if query is a Service ID (numeric)
     const serviceId = Number(query);
     if (!isNaN(serviceId) && serviceId > 0) {
-      const allServices = this.providerService.services()?.data || [];
+      const allServices = this.availableServices();
       const foundService = allServices.find(s => s.service == serviceId);
       
       if (foundService) {
         // If found, switch category first, then select service
-        this.formSelectedCategory.set(foundService.category.replace(/(More\s*Than\s*Panel|More\s*Than|MTP)/gi, 'TrendStable'));
+        this.formSelectedCategory.set(foundService.category.replace(/(More\s*Than\s*Panel|More\s*Than|MTP)/gi, 'SmmStable'));
         
         // Use setTimeout to ensure category change propagates before setting service
         setTimeout(() => {

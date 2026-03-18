@@ -31,14 +31,16 @@ export class OrderService {
     serviceId,
     quantity,
     link,
+    provider,
   }: {
     serviceId: number;
     quantity: number;
     link: string;
+    provider?: string;
   }) {
     return this.http.post<Order>(
       this.url,
-      { serviceId: Number(serviceId), quantity: Number(quantity), link },
+      { serviceId: Number(serviceId), quantity: Number(quantity), link, provider },
       {
         withCredentials: true,
       },

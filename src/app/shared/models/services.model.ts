@@ -10,6 +10,7 @@ export interface Service {
     dripfeed: boolean;
     cancel: boolean;
     average_time: number;
+    providerDetails:string;
 }
 
 export interface Services {

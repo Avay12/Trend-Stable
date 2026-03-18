@@ -8,6 +8,7 @@ export interface CartItem {
     max: number;
     quantity: number;
     link?: string;
+    provider?: string;
 }
 
 export interface Cart {
