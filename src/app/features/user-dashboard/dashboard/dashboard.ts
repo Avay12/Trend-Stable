@@ -5,11 +5,11 @@ import { AuthService } from '../../../core/services/auth.service';
 import { RouterLink } from '@angular/router';
 import { OrderService } from '../../../core/services/order.service';
 import { CurrencyService } from '../../../core/services/currency.service';
-import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { NewOrder } from '../new-order/new-order';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, RouterLink, TranslatePipe],
+  imports: [CommonModule, RouterLink, NewOrder],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
   animations: [

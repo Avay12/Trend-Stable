@@ -199,18 +199,18 @@
         <h1 class="text-xl font-bold">New order</h1>
         <div class="flex bg-muted rounded-full p-1">
           <button (click)="setOrderType('cheap')" [class.bg-white]="orderType() === 'cheap'"
-            [class.text-primary]="orderType() === 'cheap'" [class.shadow-sm]="orderType() === 'cheap'"
-            class="px-4 py-1.5 rounded-full text-sm font-medium transition-all text-muted-foreground">
+            [class.text-black]="orderType() === 'cheap'" [class.shadow-sm]="orderType() === 'cheap'"
+            class="px-4 py-1.5 rounded-full text-sm font-medium transition-all text-muted-foreground hover:text-black">
             Cheap
           </button>
           <button (click)="setOrderType('favorites')" [class.bg-white]="orderType() === 'favorites'"
-            [class.text-primary]="orderType() === 'favorites'" [class.shadow-sm]="orderType() === 'favorites'"
-            class="px-4 py-1.5 rounded-full text-sm font-medium transition-all text-muted-foreground">
+            [class.text-black]="orderType() === 'favorites'" [class.shadow-sm]="orderType() === 'favorites'"
+            class="px-4 py-1.5 rounded-full text-sm font-medium transition-all text-muted-foreground hover:text-black">
             Favorites
           </button>
           <button (click)="setOrderType('vip')" [class.bg-white]="orderType() === 'vip'"
-            [class.text-primary]="orderType() === 'vip'" [class.shadow-sm]="orderType() === 'vip'"
-            class="px-4 py-1.5 rounded-full text-sm font-medium transition-all text-muted-foreground">
+            [class.text-black]="orderType() === 'vip'" [class.shadow-sm]="orderType() === 'vip'"
+            class="px-4 py-1.5 rounded-full text-sm font-medium transition-all text-muted-foreground ">
             VIP Service
           </button>
         </div>

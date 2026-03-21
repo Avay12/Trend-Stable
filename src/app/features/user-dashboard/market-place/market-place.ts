@@ -27,10 +27,34 @@ export class MarketPlace {
 
   isLoading = signal(true);
   searchTerm = '';
-  platfrom = '';
+  platform = '';
+  allBuyAccounts: AccountOrder[] = [];
+  allSellAccounts: AccountOrder[] = [];
   buyAccounts = signal<AccountOrder[]>([]);
   sellAccounts = signal<AccountOrder[]>([]);
   activeTab = signal<'browse' | 'my-listings'>('browse');
+
+  onPlatformChange(event: Event) {
+    const target = event.target as HTMLSelectElement;
+    const value = target.value;
+    this.platform = value === 'All Platforms' ? '' : value;
+    this.filterAccounts();
+  }
+
+  filterAccounts() {
+    const platformFilter = this.platform.toLowerCase();
+    if (!platformFilter) {
+      this.buyAccounts.set(this.allBuyAccounts);
+      this.sellAccounts.set(this.allSellAccounts);
+    } else {
+      this.buyAccounts.set(
+        this.allBuyAccounts.filter(account => account.platform?.toLowerCase() === platformFilter)
+      );
+      this.sellAccounts.set(
+        this.allSellAccounts.filter(account => account.platform?.toLowerCase() === platformFilter)
+      );
+    }
+  }
 
   setActiveTab(tab: 'browse' | 'my-listings') {
     this.activeTab.set(tab);
@@ -52,9 +76,11 @@ export class MarketPlace {
   }
 
   loadBuyingAccounts() {
+    this.isLoading.set(true);
     this.accountOrderService.getAllAccountBuying(this.searchTerm, '').subscribe({
       next: (accounts) => {
-        this.buyAccounts.set(accounts as any);
+        this.allBuyAccounts = accounts as any;
+        this.filterAccounts();
         this.isLoading.set(false);
       },
       error: (err: any) => {
@@ -67,7 +93,8 @@ export class MarketPlace {
   loadSellingAccounts() {
     this.accountOrderService.getAccountOrderById(this.searchTerm, '').subscribe({
       next: (accounts) => {
-        this.sellAccounts.set(accounts as any);
+        this.allSellAccounts = accounts as any;
+        this.filterAccounts();
         // We generally rely on loadBuyingAccounts to clear loading for the main view,
         // but if tab switches, this data is already there. 
         // We can just leave isLoading alone here or set it false too as safeguard.

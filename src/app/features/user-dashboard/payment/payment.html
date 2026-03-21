@@ -3,7 +3,7 @@
   <div class="grid gap-6 lg:grid-cols-12 items-start">
     <!-- Balance Card (Left Side) -->
     <div class="lg:col-span-4 space-y-6">
-      <div class="rounded-xl border-none shadow-lg bg-primary  text-white h-fit relative overflow-hidden">
+      <div class="rounded-xl border-none shadow-lg bg-primary  text-black h-fit relative overflow-hidden">
         <div class="p-5 lg:p-8 flex flex-col justify-between lg:min-h-[464px] min-h-[auto]">
           <div class="space-y-4 lg:space-y-6">
             <div class="flex items-center gap-3 lg:gap-4">
@@ -222,7 +222,7 @@
             </button>
 
             <button type="submit" [disabled]="paymentForm.invalid || isProcessing()"
-              class="w-full inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-base font-semibold ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-white hover:bg-primary/90 h-12 px-4 shadow-md hover:shadow-lg transform active:scale-[0.98]">
+              class="w-full inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-base font-semibold ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer disabled:opacity-50 bg-primary text-black hover:bg-primary/30 h-12 px-4 shadow-md hover:shadow-lg transform active:scale-[0.98]">
               @if(isProcessing()) {
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
