@@ -156,29 +156,42 @@
     <p class="text-muted-foreground text-sm">Welcome back,</p>
     <h1 class="font-display text-2xl font-bold"><span
         class="gradient-text">{{authService.currentUser()?.username}}</span> 👋</h1>
-  </div><a class="block" routerLink="/dashboard/payment">
-    <div class="bg-gradient-to-br from-primary to-accent rounded-2xl p-5 text-white relative overflow-hidden">
-      <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
-      <div class="relative">
-        <div class="flex items-center gap-2 mb-3"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-            stroke-linejoin="round" class="lucide lucide-wallet w-5 h-5">
-            <path
-              d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1">
-            </path>
-            <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"></path>
-          </svg><span class="text-sm opacity-90">Wallet Balance</span></div>
+  </div>
+  
+  <a class="block group" routerLink="/dashboard/payment">
+    <div class="bg-gradient-to-br from-indigo-600 via-purple-600 to-fuchsia-600 rounded-3xl p-6 text-white relative overflow-hidden shadow-xl shadow-purple-500/25 border border-white/10 transition-all duration-300 group-hover:scale-[1.02]">
+      <div class="absolute top-0 right-0 w-48 h-48 bg-white/15 rounded-full blur-2xl -translate-y-1/2 translate-x-1/3"></div>
+      <div class="absolute bottom-0 left-0 w-32 h-32 bg-white/10 rounded-full blur-2xl translate-y-1/3 -translate-x-1/3"></div>
+      <div class="absolute inset-0 bg-gradient-to-tr from-black/10 to-transparent"></div>
+      <div class="relative z-10">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <div class="p-2.5 bg-white/20 rounded-xl backdrop-blur-md shadow-inner border border-white/20">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" class="lucide lucide-wallet w-5 h-5">
+                <path
+                  d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1">
+                </path>
+                <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"></path>
+              </svg>
+            </div>
+            <span class="text-sm font-medium text-white/90">Wallet Balance</span>
+          </div>
+        </div>
         <div class="flex items-end justify-between">
-          <p class="text-2xl font-bold font-display"
-            [style.fontSize]="currencyService.currentCurrency().code === 'NPR' ? '1.5rem' : null">
+          <p class="text-3xl font-bold font-display tracking-tight"
+            [style.fontSize]="currencyService.currentCurrency().code === 'NPR' ? '1.75rem' : null">
             <span
-              class="text-[20px] leading-[1.75rem] mr-1 align-top relative top-0.5">{{currencyService.currentCurrency().symbol}}</span>{{currencyService.convert(authService.currentUser()?.balance
+              class="text-xl font-medium text-white/80 mr-1 align-top relative top-1">{{currencyService.currentCurrency().symbol}}</span>{{currencyService.convert(authService.currentUser()?.balance
             || 0) | number:'1.2-2'}}
-          </p><button routerLink="/dashboard/payment"
-            class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 rounded-md h-9 px-4 bg-white/20 hover:bg-secondary/30 border-0 text-white"><svg
+          </p>
+          <button routerLink="/dashboard/payment"
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-bold ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 rounded-xl h-10 px-5 bg-white text-black hover:bg-gray-100 hover:scale-105 active:scale-95 shadow-lg">
+            <svg
               xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-              class="lucide lucide-plus w-4 h-4 mr-1">
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-plus w-4 h-4">
               <path d="M5 12h14"></path>
               <path d="M12 5v14"></path>
             </svg>Add Funds</button>
