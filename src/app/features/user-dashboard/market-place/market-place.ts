@@ -130,7 +130,16 @@ export class MarketPlace {
       case 'youtube':
         return { gradient: 'from-red-500 to-red-600', icon: 'youtube' };
       case 'twitter':
+      case 'twitter / x':
         return { gradient: 'from-gray-700 to-gray-900', icon: 'x' };
+      case 'telegram':
+        return { gradient: 'from-sky-400 to-blue-500', icon: 'send' };
+      case 'twitch':
+        return { gradient: 'from-purple-500 to-purple-700', icon: 'twitch' };
+      case 'kick':
+        return { gradient: 'from-green-400 to-green-600', icon: 'play' };
+      case 'linkedin':
+        return { gradient: 'from-blue-500 to-blue-700', icon: 'linkedin' };
       default:
         return { gradient: 'from-gray-500 to-gray-600', icon: 'globe' };
     }

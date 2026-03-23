@@ -1,0 +1,44 @@
+/*
+  Safelist for dynamically-generated Tailwind gradient classes used in getPlatformStyle().
+  Tailwind v4 JIT purges class names that are only built at runtime (string interpolation).
+  Declaring them here forces them to be included in the final CSS bundle.
+*/
+
+/* Facebook */
+.from-blue-600 { --tw-gradient-from: #2563eb; }
+.to-blue-700   { --tw-gradient-to: #1d4ed8; }
+
+/* Instagram */
+.from-pink-500   { --tw-gradient-from: #ec4899; }
+.to-purple-500   { --tw-gradient-to: #a855f7; }
+
+/* TikTok */
+.from-cyan-400 { --tw-gradient-from: #22d3ee; }
+.to-pink-500   { --tw-gradient-to: #ec4899; }
+
+/* YouTube */
+.from-red-500 { --tw-gradient-from: #ef4444; }
+.to-red-600   { --tw-gradient-to: #dc2626; }
+
+/* Twitter / X */
+.from-gray-700 { --tw-gradient-from: #374151; }
+.to-gray-900   { --tw-gradient-to: #111827; }
+
+/* Default / fallback */
+.from-gray-500 { --tw-gradient-from: #6b7280; }
+.to-gray-600   { --tw-gradient-to: #4b5563; }
+
+/* Telegram */
+.from-sky-400  { --tw-gradient-from: #38bdf8; }
+.to-blue-500   { --tw-gradient-to: #3b82f6; }
+
+/* Twitch */
+.from-purple-500 { --tw-gradient-from: #a855f7; }
+.to-purple-700   { --tw-gradient-to: #7e22ce; }
+
+/* Kick */
+.from-green-400 { --tw-gradient-from: #4ade80; }
+.to-green-600   { --tw-gradient-to: #16a34a; }
+
+/* LinkedIn */
+.from-blue-500 { --tw-gradient-from: #3b82f6; }
