@@ -112,21 +112,13 @@
         class="flex items-center gap-2 text-sm text-muted-foreground bg-accent/20 px-3 py-1.5 rounded-full border border-primary/20">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-          class="lucide lucide-info w-4 h-4 text-primary">
-          <circle cx="12" cy="12" r="10" />
-          <path d="M12 16v-4" />
-          <path d="M12 8h.01" />
+          class="lucide lucide-shopping-bag w-4 h-4 text-primary">
+          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <path d="M16 10a4 4 0 0 1-8 0" />
         </svg>
-        <span>For Purchase contact us:</span>
-        <a href="https://wa.me/+9779823659935" target="_blank"
-          class="flex items-center gap-1 font-medium text-primary hover:underline">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-            class="lucide lucide-message-circle w-4 h-4">
-            <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
-          </svg>
-          WhatsApp
-        </a>
+        <span class="font-medium text-foreground">Click <span class="text-primary font-semibold">Buy Now</span> on any
+          listing to purchase instantly</span>
       </div>
     </div>
     @if (activeTab() === 'browse') {
@@ -203,19 +195,17 @@
                         <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
                       </svg>
                     </a>
-                    <a href="https://wa.me/+9779823659935" target="_blank" rel="noopener noreferrer"
-                      (click)="$event.stopPropagation()"
+                    <button (click)="initiatePurchase(account.price, $event)" [disabled]="isPurchasing()"
                       class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-primary text-primary-foreground hover:bg-primary/90 h-9 rounded-md px-3">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                        class="lucide lucide-shopping-cart w-4 h-4">
-                        <circle cx="8" cy="21" r="1"></circle>
-                        <circle cx="19" cy="21" r="1"></circle>
-                        <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12">
-                        </path>
+                        class="lucide lucide-shopping-bag w-4 h-4">
+                        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                        <line x1="3" y1="6" x2="21" y2="6" />
+                        <path d="M16 10a4 4 0 0 1-8 0" />
                       </svg>
-                      Contact Us
-                    </a>
+                      Buy Now
+                    </button>
                   </div>
                 </div>
               </div>

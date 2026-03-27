@@ -7,6 +7,7 @@ import { AccountOrder } from '../../../shared/models/acoount-order.model';
 import { PlatformIconComponent } from '../../../shared/components/platform-icon/platform-icon.component';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { CommonModule } from '@angular/common';
+import { PaymentService } from '../../../core/services/payment.service';
 
 @Component({
   selector: 'app-market-place',
@@ -23,7 +24,9 @@ import { CommonModule } from '@angular/common';
 })
 export class MarketPlace {
   private accountOrderService = inject(AccountOrderService);
+  private paymentService = inject(PaymentService);
   currencyService = inject(CurrencyService);
+  isPurchasing = signal(false);
 
   isLoading = signal(true);
   searchTerm = '';
@@ -188,14 +191,31 @@ export class MarketPlace {
 
   onSubmitListing(listingData: any) {
     console.log('Listing submitted:', listingData);
-    // Handle API call here
-    // Example:
     this.accountOrderService.createAccountOrder(listingData).subscribe({
       next: (response) => {
         console.log('Listing created:', response);
       },
       error: (error) => {
         console.error('Error creating listing:', error);
+      }
+    });
+  }
+
+  initiatePurchase(price: number, event: Event) {
+    event.stopPropagation();
+    if (this.isPurchasing()) return;
+    this.isPurchasing.set(true);
+    const convertedAmount = this.currencyService.convert(price);
+    this.paymentService.initiatePurchase(convertedAmount).subscribe({
+      next: (response: any) => {
+        this.isPurchasing.set(false);
+        if (response?.redirect_url) {
+          window.open(response.redirect_url, '_blank');
+        }
+      },
+      error: (err: any) => {
+        console.error('Purchase initiation failed:', err);
+        this.isPurchasing.set(false);
       }
     });
   }

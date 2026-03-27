@@ -67,6 +67,10 @@ export class PaymentService {
     }
     return this.http.post<any>(`${this.url}/payment/easypay/create`, payload, { withCredentials: true });
   }
+
+    initiatePurchase(amount: number): Observable<any> {
+    return this.http.post(`${this.url}/payment/initiate/purchase`, { amount }, { withCredentials: true });
+  }
 }
 
 
